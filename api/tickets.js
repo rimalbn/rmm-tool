@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { title, description, priority, deviceId, assignedTo } = req.body;
+      const { title, description, priority, status, deviceId, assignedTo } = req.body;
       if (!title || !description) return res.status(400).json({ error: 'title and description required' });
 
       const ticket = await prisma.ticket.create({
@@ -45,8 +45,10 @@ module.exports = async function handler(req, res) {
           title,
           description,
           priority: priority || 'medium',
+          status: status || 'open',
           deviceId: deviceId || null,
-          assignedTo: assignedTo || null
+          assignedTo: assignedTo || null,
+          createdBy: user.username
         }
       });
       return res.status(201).json(ticket);

@@ -51,6 +51,7 @@ model Ticket {
   description String
   status      String   @default("open")
   priority    String   @default("medium")
+  createdBy   String?
   assignedTo  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

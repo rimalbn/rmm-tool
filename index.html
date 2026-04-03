@@ -372,43 +372,49 @@
     .back-link svg { width: 14px; height: 14px; }
 
     .ticket-hd { margin-bottom: 24px; }
-    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
     .ticket-title { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; flex: 1; min-width: 0; line-height: 1.3; }
-    .ticket-meta {
-      display: flex; gap: 18px; flex-wrap: wrap;
-      font-size: 12px; color: var(--text-2);
+
+    /* Ticket info grid — lighter surface */
+    .ticket-info-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; margin-bottom: 20px;
     }
-    .ticket-meta span { display: flex; align-items: center; gap: 5px; }
+    .ticket-info-cell {
+      background: #1e2a3a; padding: 13px 16px;
+    }
+    .tic-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 5px; }
+    .tic-val { font-size: 13px; font-weight: 500; color: var(--text); }
+    .tic-val.muted { color: var(--text-2); }
 
     .ticket-desc {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 18px 20px; font-size: 13px; line-height: 1.8; color: var(--text-2);
-      margin-bottom: 24px;
+      background: #1a2336; border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; font-size: 13px; line-height: 1.8; color: #c9d1d9;
+      margin-bottom: 20px;
     }
 
-    .action-row {
-      display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; align-items: center;
-      padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px;
+    /* Action bar — lighter, clearly separate */
+    .action-bar {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+      margin-bottom: 24px;
     }
-    .action-row-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-right: 4px; }
-    .status-pill {
-      background: var(--bg); border: 1px solid var(--border); color: var(--text-2);
-      border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600;
-      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    .action-field { }
+    .action-field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); margin-bottom: 7px; }
+    .action-select {
+      width: 100%; background: #1e2a3a; border: 1px solid var(--border-hi);
+      border-radius: 8px; color: var(--text); padding: 9px 34px 9px 13px;
+      font-size: 13px; font-family: inherit; cursor: pointer; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%238b949e' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
     }
-    .status-pill:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-hi); }
-    .status-pill.pill-open { background: rgba(78,126,250,0.1); border-color: rgba(78,126,250,0.25); color: #7aa2ff; }
-    .status-pill.pill-in_progress { background: var(--amber-dim); border-color: rgba(210,153,34,0.25); color: #e3b341; }
-    .status-pill.pill-resolved { background: var(--green-dim); border-color: rgba(63,185,80,0.25); color: #3fb950; }
-    .status-pill.pill-closed { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--text-3); }
-    .divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+    .action-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
     .priority-sel {
-      margin-left: auto; background: var(--bg); border: 1px solid var(--border);
+      background: var(--bg); border: 1px solid var(--border);
       border-radius: 6px; color: var(--text); padding: 5px 30px 5px 10px;
       font-size: 12px; font-family: inherit; cursor: pointer; outline: none;
-      transition: border-color 0.15s;
-      appearance: none;
+      transition: border-color 0.15s; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%238b949e' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 10px center;
     }
@@ -730,11 +736,24 @@
             <option value="critical">Critical</option>
           </select>
         </div>
+        <div class="field"><label>Status</label>
+          <select id="nt-status">
+            <option value="open" selected>Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
         <div class="field"><label>Device (optional)</label>
           <select id="nt-device"><option value="">— No device —</option></select>
         </div>
+        <div class="field"><label>Assign To (optional)</label>
+          <select id="nt-assigned"><option value="">— Unassigned —</option></select>
+        </div>
       </div>
-      <div class="field"><label>Assign To (optional)</label><input id="nt-assigned" placeholder="Enter a username" /></div>
+      <div class="field"><label>Reported By</label><input id="nt-reporter" placeholder="Name of person who reported this" /></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
@@ -955,34 +974,79 @@ async function openTicket(id) {
   showPage('ticket-detail');
   document.querySelector('[data-page="tickets"]').classList.add('active');
   try {
-    const t = await api('/api/tickets?id=' + id);
+    const [t, users] = await Promise.all([
+      api('/api/tickets?id=' + id),
+      api('/api/users')
+    ]);
     const el = document.getElementById('ticket-detail-content');
     el.innerHTML = `
       <div class="ticket-hd">
         <div class="ticket-title-row">
           <div class="ticket-title">${esc(t.title)}</div>
           <span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span>
-          <span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span>
         </div>
-        <div class="ticket-meta">
-          <span>Created ${timeAgo(t.createdAt)}</span>
-          ${t.device ? `<span>· Device: <strong>${esc(t.device.name)}</strong></span>` : ''}
-          ${t.assignedTo ? `<span>· Assigned to <strong>${esc(t.assignedTo)}</strong></span>` : `<span style="color:var(--text-3)">· Unassigned</span>`}
+      </div>
+
+      <div class="ticket-info-grid">
+        <div class="ticket-info-cell">
+          <div class="tic-label">Status</div>
+          <div class="tic-val"><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Reported By</div>
+          <div class="tic-val">${t.createdBy ? esc(t.createdBy) : '<span class="muted">—</span>'}</div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Assigned To</div>
+          <div class="tic-val">${t.assignedTo ? esc(t.assignedTo) : '<span class="muted">Unassigned</span>'}</div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Device</div>
+          <div class="tic-val">${t.device ? esc(t.device.name) : '<span class="muted">—</span>'}</div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Created</div>
+          <div class="tic-val muted">${timeAgo(t.createdAt)}</div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Last Updated</div>
+          <div class="tic-val muted">${timeAgo(t.updatedAt)}</div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Priority</div>
+          <div class="tic-val"><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></div>
+        </div>
+        <div class="ticket-info-cell">
+          <div class="tic-label">Comments</div>
+          <div class="tic-val muted">${t.comments.length}</div>
         </div>
       </div>
 
       <div class="ticket-desc">${esc(t.description)}</div>
 
-      <div class="action-row">
-        <span class="action-row-label">Status</span>
-        ${['open','in_progress','resolved','closed'].map(s =>
-          `<button class="status-pill ${t.status===s ? 'pill-'+s : ''}" onclick="updateTicketStatus('${t.id}','${s}')">${s.replace('_',' ')}</button>`
-        ).join('')}
-        <div class="divider"></div>
-        <span class="action-row-label">Priority</span>
-        <select class="priority-sel" onchange="updateTicketPriority('${t.id}',this.value)">
-          ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p}</option>`).join('')}
-        </select>
+      <div class="action-bar">
+        <div class="action-field">
+          <div class="action-field-label">Change Status</div>
+          <select class="action-select" onchange="updateTicketStatus('${t.id}', this.value)">
+            <option value="open"        ${t.status==='open'        ?'selected':''}>Open</option>
+            <option value="in_progress" ${t.status==='in_progress' ?'selected':''}>In Progress</option>
+            <option value="resolved"    ${t.status==='resolved'    ?'selected':''}>Resolved</option>
+            <option value="closed"      ${t.status==='closed'      ?'selected':''}>Closed</option>
+          </select>
+        </div>
+        <div class="action-field">
+          <div class="action-field-label">Reassign To</div>
+          <select class="action-select" onchange="updateTicketAssignee('${t.id}', this.value)">
+            <option value="">— Unassigned —</option>
+            ${users.map(u => `<option value="${u.username}" ${t.assignedTo===u.username?'selected':''}>${esc(u.username)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="action-field">
+          <div class="action-field-label">Priority</div>
+          <select class="action-select" onchange="updateTicketPriority('${t.id}', this.value)">
+            ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}
+          </select>
+        </div>
       </div>
 
       <div class="activity-hd">Activity · ${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</div>
@@ -994,7 +1058,7 @@ async function openTicket(id) {
               <span class="comment-time">${timeAgo(c.createdAt)}</span>
             </div>
             <div class="comment-body">${esc(c.content)}</div>
-          </div>`).join('') || `<div style="color:var(--text-3);font-size:13px;padding:4px 0 12px">No comments yet. Be the first to add one.</div>`}
+          </div>`).join('') || `<div style="color:var(--text-3);font-size:13px;padding:4px 0 12px">No comments yet.</div>`}
       </div>
       <div class="new-comment-row">
         <div class="field"><textarea id="new-comment-${t.id}" placeholder="Leave a comment..."></textarea></div>
@@ -1010,9 +1074,17 @@ async function updateTicketStatus(id, status) {
   } catch (e) { alert(e.message); }
 }
 
+async function updateTicketAssignee(id, assignedTo) {
+  try {
+    await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ assignedTo: assignedTo || null }) });
+    openTicket(id);
+  } catch (e) { alert(e.message); }
+}
+
 async function updateTicketPriority(id, priority) {
   try {
     await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ priority }) });
+    openTicket(id);
   } catch (e) { alert(e.message); }
 }
 
@@ -1122,12 +1194,19 @@ async function openDevice(id) {
 function openNewTicketModal() {
   document.getElementById('nt-title').value = '';
   document.getElementById('nt-desc').value = '';
-  document.getElementById('nt-assigned').value = '';
-  api('/api/devices').then(devices => {
-    const sel = document.getElementById('nt-device');
-    sel.innerHTML = '<option value="">— No device —</option>' +
+  document.getElementById('nt-reporter').value = currentAdmin.username;
+  document.getElementById('nt-status').value = 'open';
+
+  Promise.all([api('/api/devices'), api('/api/users')]).then(([devices, users]) => {
+    document.getElementById('nt-device').innerHTML =
+      '<option value="">— No device —</option>' +
       devices.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('');
+
+    document.getElementById('nt-assigned').innerHTML =
+      '<option value="">— Unassigned —</option>' +
+      users.map(u => `<option value="${u.username}">${esc(u.username)}</option>`).join('');
   }).catch(() => {});
+
   document.getElementById('modal-new-ticket').classList.add('open');
 }
 
@@ -1135,11 +1214,12 @@ async function createTicket() {
   const title      = document.getElementById('nt-title').value.trim();
   const description= document.getElementById('nt-desc').value.trim();
   const priority   = document.getElementById('nt-priority').value;
+  const status     = document.getElementById('nt-status').value;
   const deviceId   = document.getElementById('nt-device').value;
-  const assignedTo = document.getElementById('nt-assigned').value.trim();
+  const assignedTo = document.getElementById('nt-assigned').value;
   if (!title || !description) return alert('Title and description are required');
   try {
-    await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, deviceId: deviceId || null, assignedTo: assignedTo || null }) });
+    await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, status, deviceId: deviceId || null, assignedTo: assignedTo || null }) });
     closeModal('modal-new-ticket');
     loadTickets();
   } catch (e) { alert(e.message); }
