@@ -4,311 +4,626 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RMM Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d2e;
-      --surface2: #252840;
-      --border: #2e3148;
-      --accent: #6366f1;
-      --accent-hover: #818cf8;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --green: #22c55e;
-      --red: #ef4444;
-      --yellow: #eab308;
-      --orange: #f97316;
+      --bg:       #09090b;
+      --surface:  #111113;
+      --surface2: #18181b;
+      --surface3: #1f1f23;
+      --border:   #27272a;
+      --border2:  #3f3f46;
+      --accent:   #3b82f6;
+      --accent-dim: rgba(59,130,246,0.12);
+      --text:     #f4f4f5;
+      --text-2:   #a1a1aa;
+      --text-3:   #52525b;
+      --green:    #22c55e;
+      --green-dim: rgba(34,197,94,0.1);
+      --red:      #ef4444;
+      --red-dim:  rgba(239,68,68,0.1);
+      --amber:    #f59e0b;
+      --amber-dim: rgba(245,158,11,0.1);
+      --blue-dim: rgba(59,130,246,0.1);
     }
 
-    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+    }
 
-    /* ── Auth Screen ── */
+    /* ─── Auth ─── */
     #auth-screen {
-      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+      display: none; align-items: center; justify-content: center;
+      min-height: 100vh; background: var(--bg);
     }
-    .auth-box {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-      padding: 40px; width: 360px;
+    .auth-wrap {
+      width: 340px;
     }
-    .auth-box h1 { font-size: 22px; margin-bottom: 6px; }
-    .auth-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-      color: var(--text); padding: 10px 12px; font-size: 14px; outline: none;
+    .auth-brand {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 32px;
     }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      border-color: var(--accent);
+    .auth-brand-icon {
+      width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .form-group textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+    .auth-brand-icon svg { width: 16px; height: 16px; fill: #fff; }
+    .auth-brand-name { font-size: 15px; font-weight: 600; }
+    .auth-wrap h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .auth-wrap p { color: var(--text-2); font-size: 13px; margin-bottom: 24px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; letter-spacing: 0.02em; }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 8px 11px; font-size: 13px;
+      font-family: inherit; outline: none; transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field select { cursor: pointer; }
+    .auth-err { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
+
+    /* ─── Buttons ─── */
     .btn {
-      background: var(--accent); color: #fff; border: none; border-radius: 8px;
-      padding: 10px 20px; font-size: 14px; cursor: pointer; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+      border: none; border-radius: 6px; padding: 7px 14px; transition: all 0.15s; white-space: nowrap;
     }
-    .btn:hover { background: var(--accent-hover); }
-    .btn-full { width: 100%; padding: 12px; }
-    .btn-sm { padding: 6px 14px; font-size: 13px; }
-    .btn-danger { background: var(--red); }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-ghost {
-      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-full { width: 100%; justify-content: center; padding: 9px 14px; }
+    .btn-outline {
+      background: transparent; color: var(--text-2); border: 1px solid var(--border);
     }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
-    .auth-err { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+    .btn-outline:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+    .btn-ghost { background: transparent; color: var(--text-2); }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: var(--red); color: #fff; }
 
-    /* ── App Layout ── */
-    #app { display: none; }
-    .layout { display: flex; height: 100vh; }
+    /* ─── Layout ─── */
+    #app { display: none; height: 100vh; }
+    .layout { display: flex; height: 100%; overflow: hidden; }
 
+    /* ─── Sidebar ─── */
     .sidebar {
-      width: 220px; background: var(--surface); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; flex-shrink: 0;
+      width: 216px; flex-shrink: 0; background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
     }
     .sidebar-logo {
-      padding: 20px 16px; font-size: 16px; font-weight: 700;
-      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+      height: 56px; display: flex; align-items: center; gap: 9px;
+      padding: 0 16px; border-bottom: 1px solid var(--border);
     }
-    .sidebar-logo span { color: var(--accent); font-size: 20px; }
-    .nav-item {
-      padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-      font-size: 14px; color: var(--text-muted); border-left: 3px solid transparent;
-      transition: all 0.15s;
+    .logo-icon {
+      width: 26px; height: 26px; background: var(--accent); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: var(--surface2); color: var(--accent); border-left-color: var(--accent); }
-    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-    .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
-    .admin-badge { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .logo-icon svg { width: 13px; height: 13px; fill: #fff; }
+    .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
 
-    .main { flex: 1; overflow-y: auto; padding: 28px; }
+    .nav-section { padding: 8px 8px 0; }
+    .nav-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-3); padding: 8px 8px 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 9px; padding: 7px 8px;
+      border-radius: 6px; cursor: pointer; color: var(--text-2); font-size: 13px;
+      font-weight: 500; transition: all 0.12s; margin-bottom: 1px;
+    }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item:hover svg { opacity: 1; }
+    .nav-item.active { background: var(--accent-dim); color: var(--accent); }
+    .nav-item.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto; background: var(--surface3); color: var(--text-2);
+      font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 10px;
+    }
+    .nav-item.active .nav-badge { background: rgba(59,130,246,0.2); color: var(--accent); }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 12px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--accent-dim);
+      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: var(--accent); flex-shrink: 0; text-transform: uppercase;
+    }
+    .sidebar-footer-info { flex: 1; min-width: 0; }
+    .footer-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .footer-role { font-size: 11px; color: var(--text-3); }
+    .signout-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      padding: 4px; border-radius: 4px; display: flex; transition: color 0.15s;
+    }
+    .signout-btn:hover { color: var(--text-2); }
+    .signout-btn svg { width: 14px; height: 14px; }
+
+    /* ─── Main ─── */
+    .main { flex: 1; overflow-y: auto; background: var(--bg); }
+    .main-inner { padding: 28px 32px; max-width: 1200px; }
+
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ── Page Headers ── */
-    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .page-header h2 { font-size: 20px; }
+    /* ─── Page Header ─── */
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 13px; color: var(--text-2); margin-top: 2px; }
 
-    /* ── Stats Row ── */
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    /* ─── Stat Cards ─── */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
     .stat-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 16px 18px; position: relative; overflow: hidden;
     }
-    .stat-card .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-card .stat-val { font-size: 28px; font-weight: 700; margin-top: 6px; }
+    .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 10px; }
+    .stat-val { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--text-3); margin-top: 5px; }
+    .stat-indicator {
+      position: absolute; top: 0; right: 0; width: 3px; height: 100%; border-radius: 0 8px 8px 0;
+    }
 
-    /* ── Tables ── */
+    /* ─── Grid Layouts ─── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3-1 { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ─── Cards / Tables ─── */
     .card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
     }
-    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .card-header h3 { font-size: 15px; }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 13px; font-weight: 600; }
+    .card-count { font-size: 12px; color: var(--text-3); margin-left: 6px; }
+
     table { width: 100%; border-collapse: collapse; }
-    th { padding: 12px 16px; text-align: left; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
-    td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface2); cursor: pointer; }
+    thead th {
+      padding: 0 18px; height: 36px; text-align: left;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--text-3); border-bottom: 1px solid var(--border);
+    }
+    tbody td { padding: 0 18px; height: 44px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.1s; }
+    tbody tr[onclick] { cursor: pointer; }
+    tbody tr:hover td { background: var(--surface2); }
 
-    /* ── Badges ── */
+    .td-primary { font-weight: 500; color: var(--text); }
+    .td-muted { color: var(--text-2); }
+    .td-dim { color: var(--text-3); }
+
+    /* ─── Badges ─── */
     .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap;
     }
-    .badge-open { background: #1e3a5f; color: #60a5fa; }
-    .badge-in_progress { background: #2d2a1e; color: #fbbf24; }
-    .badge-resolved { background: #1a3a2e; color: #34d399; }
-    .badge-closed { background: #1e1e2e; color: var(--text-muted); }
-    .badge-low { background: #1a2e1a; color: #4ade80; }
-    .badge-medium { background: #2d2a1e; color: #fbbf24; }
-    .badge-high { background: #2d1e1e; color: #f87171; }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+    .badge-open { background: var(--blue-dim); color: #60a5fa; }
+    .badge-open::before { background: #60a5fa; }
+    .badge-in_progress { background: var(--amber-dim); color: #fbbf24; }
+    .badge-in_progress::before { background: #fbbf24; }
+    .badge-resolved { background: var(--green-dim); color: #4ade80; }
+    .badge-resolved::before { background: #4ade80; }
+    .badge-closed { background: var(--surface3); color: var(--text-3); }
+    .badge-closed::before { background: var(--text-3); }
+
+    .badge-low { background: var(--green-dim); color: #4ade80; }
+    .badge-low::before { background: #4ade80; }
+    .badge-medium { background: var(--amber-dim); color: #fbbf24; }
+    .badge-medium::before { background: #fbbf24; }
+    .badge-high { background: var(--red-dim); color: #f87171; }
+    .badge-high::before { background: #f87171; }
     .badge-critical { background: var(--red); color: #fff; }
-    .online-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-    .dot-online { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .dot-offline { background: #4b5563; }
+    .badge-critical::before { background: rgba(255,255,255,0.7); }
 
-    /* ── Device Detail ── */
-    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .metric-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px;
-    }
-    .metric-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .metric-value { font-size: 24px; font-weight: 700; margin-top: 6px; }
-    .metric-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .progress-bar { background: var(--border); border-radius: 4px; height: 6px; margin-top: 8px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
-    .fill-green { background: var(--green); }
-    .fill-yellow { background: var(--yellow); }
-    .fill-red { background: var(--red); }
+    /* ─── Status dot ─── */
+    .status-cell { display: flex; align-items: center; gap: 7px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-online { background: var(--green); box-shadow: 0 0 0 2px var(--green-dim); }
+    .dot-offline { background: var(--border2); }
 
-    /* ── Modal ── */
+    /* ─── Progress bars ─── */
+    .pbar-wrap { display: flex; align-items: center; gap: 8px; }
+    .pbar { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .pbar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+    .pbar-green { background: var(--green); }
+    .pbar-amber { background: var(--amber); }
+    .pbar-red { background: var(--red); }
+    .pbar-label { font-size: 12px; font-weight: 500; color: var(--text-2); width: 36px; text-align: right; flex-shrink: 0; }
+
+    /* ─── Metric cards ─── */
+    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+    .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .metric-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .metric-val { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .metric-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .metric-bar { margin-top: 10px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .metric-bar-fill { height: 100%; border-radius: 2px; }
+
+    /* ─── Modals ─── */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
-      display: flex; align-items: center; justify-content: center; display: none;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px);
+      z-index: 200; display: none; align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-      padding: 28px; width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      width: 500px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
     }
-    .modal h3 { font-size: 18px; margin-bottom: 20px; }
-    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+    }
+    .modal-head h3 { font-size: 14px; font-weight: 600; }
+    .modal-close {
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      padding: 4px; border-radius: 4px; display: flex; transition: color 0.15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-close svg { width: 16px; height: 16px; }
+    .modal-body { padding: 20px; }
+    .modal-foot {
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 14px 20px; border-top: 1px solid var(--border);
+    }
 
-    /* ── Ticket Detail ── */
-    .ticket-detail-header { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 6px; }
-    .ticket-meta { display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-    .ticket-body { background: var(--surface2); border-radius: 8px; padding: 16px; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-    .comment-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
-    .comment { background: var(--surface2); border-radius: 8px; padding: 14px; }
-    .comment-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
-    .comment-author { font-weight: 600; }
-    .comment-time { color: var(--text-muted); }
-    .comment-text { font-size: 14px; line-height: 1.5; }
-    .add-comment { display: flex; gap: 10px; }
-    .add-comment textarea { flex: 1; }
+    /* ─── Info banner ─── */
+    .info-banner {
+      background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #93c5fd;
+      margin-bottom: 16px; line-height: 1.5;
+    }
 
-    /* ── Misc ── */
-    .empty { padding: 40px; text-align: center; color: var(--text-muted); font-size: 14px; }
-    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .back-btn { color: var(--accent); cursor: pointer; font-size: 14px; margin-bottom: 16px; display: inline-block; }
-    .back-btn:hover { text-decoration: underline; }
+    /* ─── Token box ─── */
     .token-box {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-      padding: 12px; font-family: monospace; font-size: 13px; word-break: break-all; color: var(--green);
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 12px; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; word-break: break-all; color: #4ade80; line-height: 1.6;
     }
-    .alert { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
-    .alert-info { background: #1e3a5f; color: #93c5fd; border: 1px solid #1d4ed8; }
+
+    /* ─── Ticket detail ─── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px; color: var(--text-2);
+      font-size: 13px; cursor: pointer; margin-bottom: 20px; transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    .ticket-header { margin-bottom: 20px; }
+    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+    .ticket-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; flex: 1; }
+    .ticket-meta-row { display: flex; gap: 16px; font-size: 12px; color: var(--text-2); }
+
+    .ticket-desc {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 16px; font-size: 13px; line-height: 1.7; color: var(--text-2); margin-bottom: 20px;
+    }
+
+    .status-bar {
+      display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+    }
+    .status-btn {
+      background: var(--surface2); border: 1px solid var(--border); color: var(--text-2);
+      border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 500;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .status-btn:hover { background: var(--surface3); color: var(--text); }
+    .status-btn.active-open { background: var(--blue-dim); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
+    .status-btn.active-in_progress { background: var(--amber-dim); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+    .status-btn.active-resolved { background: var(--green-dim); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .status-btn.active-closed { background: var(--surface3); border-color: var(--border2); color: var(--text-2); }
+    .priority-select {
+      margin-left: auto; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px;
+      font-family: inherit; cursor: pointer; outline: none;
+    }
+    .priority-select:focus { border-color: var(--accent); }
+
+    .section-hd { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+
+    .comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .comment { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .comment-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .comment-author { font-size: 12px; font-weight: 600; }
+    .comment-time { font-size: 11px; color: var(--text-3); }
+    .comment-body { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+
+    .comment-input-row { display: flex; gap: 8px; }
+    .comment-input-row textarea { flex: 1; }
+    .comment-input-row .btn { align-self: flex-end; }
+
+    /* ─── Empty state ─── */
+    .empty {
+      padding: 40px 20px; text-align: center; color: var(--text-3); font-size: 13px;
+    }
+    .empty-icon { font-size: 24px; margin-bottom: 8px; opacity: 0.4; }
+
+    /* ─── Assigned-to-me section ─── */
+    .mine-section { margin-top: 20px; }
   </style>
 </head>
 <body>
 
-<!-- Auth -->
+<!-- ───── Auth ───── -->
 <div id="auth-screen">
-  <div class="auth-box">
-    <h1>RMM Dashboard</h1>
-    <p id="auth-subtitle">Sign in to continue</p>
-    <div id="setup-fields" style="display:none">
-      <div class="form-group"><label>Username</label><input id="setup-username" placeholder="admin" /></div>
-      <div class="form-group"><label>Email</label><input id="setup-email" type="email" placeholder="you@example.com" /></div>
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="auth-brand-icon">
+        <svg viewBox="0 0 16 16"><path d="M8 1L1 4v4c0 4 3 6.5 7 8 4-1.5 7-4 7-8V4L8 1z"/></svg>
+      </div>
+      <span class="auth-brand-name">RMM Dashboard</span>
     </div>
-    <div class="form-group"><label>Username</label><input id="login-username" placeholder="admin" /></div>
-    <div class="form-group"><label>Password</label><input id="login-password" type="password" placeholder="••••••••" /></div>
-    <button class="btn btn-full" id="auth-btn">Sign In</button>
+    <h1>Welcome back</h1>
+    <p id="auth-subtitle">Sign in to your account to continue</p>
+    <div id="setup-fields" style="display:none">
+      <div class="field"><label>Username</label><input id="setup-username" placeholder="admin" autocomplete="username" /></div>
+      <div class="field"><label>Email</label><input id="setup-email" type="email" placeholder="you@example.com" autocomplete="email" /></div>
+    </div>
+    <div class="field"><label>Username</label><input id="login-username" placeholder="admin" autocomplete="username" /></div>
+    <div class="field"><label>Password</label><input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+    <button class="btn btn-primary btn-full" id="auth-btn">Sign In</button>
     <div class="auth-err" id="auth-err"></div>
   </div>
 </div>
 
-<!-- App -->
+<!-- ───── App ───── -->
 <div id="app">
   <div class="layout">
-    <div class="sidebar">
-      <div class="sidebar-logo"><span>⬡</span> RMM Tool</div>
-      <div class="nav-item active" data-page="overview"><span class="icon">◈</span> Overview</div>
-      <div class="nav-item" data-page="tickets"><span class="icon">◷</span> Tickets</div>
-      <div class="nav-item" data-page="devices"><span class="icon">⬜</span> Devices</div>
-      <div class="sidebar-bottom">
-        <div class="admin-badge" id="admin-name">admin</div>
-        <button class="btn btn-ghost btn-sm" onclick="logout()">Sign Out</button>
-      </div>
-    </div>
 
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 16 16"><path d="M8 1L1 4v4c0 4 3 6.5 7 8 4-1.5 7-4 7-8V4L8 1z"/></svg>
+        </div>
+        <span class="logo-text">RMM Tool</span>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-item active" data-page="overview">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h6v6H1V1zm0 8h6v6H1V9zm8-8h6v6H9V1zm0 8h6v6H9V9z"/></svg>
+          Overview
+        </div>
+        <div class="nav-item" data-page="tickets">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1zm0 3v8h12V5H2zm2 2h8v1H4V7zm0 2h6v1H4V9z"/></svg>
+          Tickets
+          <span class="nav-badge" id="nav-ticket-count">—</span>
+        </div>
+        <div class="nav-item" data-page="devices">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14a1 1 0 011 1v9a1 1 0 01-1 1H9v1h1v1H6v-1h1v-1H1a1 1 0 01-1-1V3a1 1 0 011-1zm0 2v7h14V4H1z"/></svg>
+          Devices
+          <span class="nav-badge" id="nav-device-count">—</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="avatar" id="admin-avatar">A</div>
+        <div class="sidebar-footer-info">
+          <div class="footer-name" id="admin-name">admin</div>
+          <div class="footer-role">Administrator</div>
+        </div>
+        <button class="signout-btn" onclick="logout()" title="Sign out">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 2H2v12h4v1H1V1h5V2zm5.5 3.5l-.7.7L13.1 8H5V9h8.1l-2.3 1.8.7.7L15 8.5l-3.5-3z"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
     <div class="main">
-      <!-- Overview -->
-      <div class="page active" id="page-overview">
-        <div class="page-header"><h2>Overview</h2></div>
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-label">Open Tickets</div><div class="stat-val" id="stat-open" style="color:var(--accent)">—</div></div>
-          <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-val" id="stat-inprog" style="color:var(--yellow)">—</div></div>
-          <div class="stat-card"><div class="stat-label">Devices Online</div><div class="stat-val" id="stat-online" style="color:var(--green)">—</div></div>
-          <div class="stat-card"><div class="stat-label">Devices Offline</div><div class="stat-val" id="stat-offline" style="color:var(--red)">—</div></div>
+      <div class="main-inner">
+
+        <!-- ── Overview ── -->
+        <div class="page active" id="page-overview">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Overview</div>
+              <div class="page-subtitle">System status at a glance</div>
+            </div>
+            <button class="btn btn-primary" onclick="openNewTicketModal()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              New Ticket
+            </button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-indicator" style="background:var(--accent)"></div>
+              <div class="stat-label">Open Tickets</div>
+              <div class="stat-val" id="stat-open">—</div>
+              <div class="stat-sub">Awaiting action</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-indicator" style="background:var(--amber)"></div>
+              <div class="stat-label">In Progress</div>
+              <div class="stat-val" id="stat-inprog">—</div>
+              <div class="stat-sub">Being worked on</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-indicator" style="background:var(--green)"></div>
+              <div class="stat-label">Devices Online</div>
+              <div class="stat-val" id="stat-online">—</div>
+              <div class="stat-sub">Reporting in last 5m</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-indicator" style="background:var(--border2)"></div>
+              <div class="stat-label">Devices Offline</div>
+              <div class="stat-val" id="stat-offline">—</div>
+              <div class="stat-sub">Not recently seen</div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:16px">
+            <div class="card">
+              <div class="card-header">
+                <div style="display:flex;align-items:center">
+                  <span class="card-title">Recent Tickets</span>
+                </div>
+                <span class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="loadTickets()">View all →</span>
+              </div>
+              <table>
+                <thead><tr><th>Title</th><th>Priority</th><th>Status</th></tr></thead>
+                <tbody id="overview-tickets"></tbody>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Devices</span>
+                <span class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="loadDevices()">View all →</span>
+              </div>
+              <table>
+                <thead><tr><th>Device</th><th>Status</th><th>CPU</th></tr></thead>
+                <tbody id="overview-devices"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mine-section">
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Assigned to Me</span>
+              </div>
+              <table>
+                <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Device</th><th>Updated</th></tr></thead>
+                <tbody id="overview-mine"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-header"><h3>Recent Tickets</h3></div>
-            <table><thead><tr><th>Title</th><th>Priority</th><th>Status</th></tr></thead>
-            <tbody id="overview-tickets"></tbody></table>
+
+        <!-- ── Tickets list ── -->
+        <div class="page" id="page-tickets">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Tickets</div>
+              <div class="page-subtitle" id="tickets-subtitle">All tickets</div>
+            </div>
+            <button class="btn btn-primary" onclick="openNewTicketModal()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              New Ticket
+            </button>
           </div>
           <div class="card">
-            <div class="card-header"><h3>Devices</h3></div>
-            <table><thead><tr><th>Device</th><th>Status</th><th>CPU</th></tr></thead>
-            <tbody id="overview-devices"></tbody></table>
+            <table>
+              <thead><tr><th>Title</th><th>Device</th><th>Priority</th><th>Status</th><th>Assigned</th><th>Created</th></tr></thead>
+              <tbody id="tickets-tbody"></tbody>
+            </table>
           </div>
         </div>
-      </div>
 
-      <!-- Tickets list -->
-      <div class="page" id="page-tickets">
-        <div class="page-header">
-          <h2>Tickets</h2>
-          <button class="btn btn-sm" onclick="openNewTicketModal()">+ New Ticket</button>
+        <!-- ── Ticket detail ── -->
+        <div class="page" id="page-ticket-detail">
+          <div class="back-link" onclick="showPage('tickets'); loadTickets()">
+            <svg viewBox="0 0 14 14" fill="currentColor"><path d="M8 1L2 7l6 6M2 7h10"/></svg>
+            Back to Tickets
+          </div>
+          <div id="ticket-detail-content"></div>
         </div>
-        <div class="card">
-          <table><thead><tr><th>Title</th><th>Device</th><th>Priority</th><th>Status</th><th>Assigned</th><th>Created</th></tr></thead>
-          <tbody id="tickets-tbody"></tbody></table>
-        </div>
-      </div>
 
-      <!-- Ticket detail -->
-      <div class="page" id="page-ticket-detail">
-        <span class="back-btn" onclick="showPage('tickets'); loadTickets()">← Back to Tickets</span>
-        <div id="ticket-detail-content"></div>
-      </div>
-
-      <!-- Devices list -->
-      <div class="page" id="page-devices">
-        <div class="page-header">
-          <h2>Devices</h2>
-          <button class="btn btn-sm" onclick="openAddDeviceModal()">+ Add Device</button>
+        <!-- ── Devices list ── -->
+        <div class="page" id="page-devices">
+          <div class="page-header">
+            <div>
+              <div class="page-title">Devices</div>
+              <div class="page-subtitle">Registered endpoints and their health</div>
+            </div>
+            <button class="btn btn-primary" onclick="openAddDeviceModal()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              Add Device
+            </button>
+          </div>
+          <div class="card">
+            <table>
+              <thead><tr><th>Name</th><th>Hostname</th><th>OS</th><th>IP Address</th><th>Status</th><th>Last Seen</th><th>Open Tickets</th></tr></thead>
+              <tbody id="devices-tbody"></tbody>
+            </table>
+          </div>
         </div>
-        <div class="card">
-          <table><thead><tr><th>Name</th><th>Hostname</th><th>OS</th><th>IP</th><th>Status</th><th>Last Seen</th><th>Open Tickets</th></tr></thead>
-          <tbody id="devices-tbody"></tbody></table>
-        </div>
-      </div>
 
-      <!-- Device detail -->
-      <div class="page" id="page-device-detail">
-        <span class="back-btn" onclick="showPage('devices'); loadDevices()">← Back to Devices</span>
-        <div id="device-detail-content"></div>
+        <!-- ── Device detail ── -->
+        <div class="page" id="page-device-detail">
+          <div class="back-link" onclick="showPage('devices'); loadDevices()">
+            <svg viewBox="0 0 14 14" fill="currentColor"><path d="M8 1L2 7l6 6M2 7h10"/></svg>
+            Back to Devices
+          </div>
+          <div id="device-detail-content"></div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
 
-<!-- New Ticket Modal -->
+<!-- ───── New Ticket Modal ───── -->
 <div class="modal-overlay" id="modal-new-ticket">
   <div class="modal">
-    <h3>New Ticket</h3>
-    <div class="form-group"><label>Title</label><input id="nt-title" placeholder="Brief description of the issue" /></div>
-    <div class="form-group"><label>Description</label><textarea id="nt-desc" placeholder="Full details..."></textarea></div>
-    <div class="two-col">
-      <div class="form-group"><label>Priority</label>
-        <select id="nt-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
-      </div>
-      <div class="form-group"><label>Device (optional)</label><select id="nt-device"><option value="">— None —</option></select></div>
+    <div class="modal-head">
+      <h3>Create Ticket</h3>
+      <button class="modal-close" onclick="closeModal('modal-new-ticket')">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 4l8 8M12 4l-8 8"/><path stroke="currentColor" stroke-width="1.5" d="M4 4l8 8M12 4l-8 8"/></svg>
+        ✕
+      </button>
     </div>
-    <div class="form-group"><label>Assigned To (optional)</label><input id="nt-assigned" placeholder="Name or username" /></div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-new-ticket')">Cancel</button>
-      <button class="btn btn-sm" onclick="createTicket()">Create Ticket</button>
+    <div class="modal-body">
+      <div class="field"><label>Title</label><input id="nt-title" placeholder="Brief description of the issue" /></div>
+      <div class="field"><label>Description</label><textarea id="nt-desc" placeholder="Full details, steps to reproduce, environment..."></textarea></div>
+      <div class="two-col">
+        <div class="field"><label>Priority</label>
+          <select id="nt-priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="field"><label>Device (optional)</label>
+          <select id="nt-device"><option value="">— None —</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Assigned To (optional)</label><input id="nt-assigned" placeholder="Username or name" /></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
+      <button class="btn btn-primary" onclick="createTicket()">Create Ticket</button>
     </div>
   </div>
 </div>
 
-<!-- Add Device Modal -->
+<!-- ───── Add Device Modal ───── -->
 <div class="modal-overlay" id="modal-add-device">
   <div class="modal">
-    <h3>Add Device</h3>
-    <div class="alert alert-info">A unique agent token will be generated. Install the agent script on the device using that token.</div>
-    <div class="form-group"><label>Device Name</label><input id="ad-name" placeholder="e.g. my-windows-vm" /></div>
-    <div id="ad-result" style="display:none">
-      <div class="form-group"><label>Agent Token (save this — shown once)</label><div class="token-box" id="ad-token"></div></div>
-      <div class="form-group"><label>Install command (Node.js agent)</label><div class="token-box" id="ad-install"></div></div>
+    <div class="modal-head">
+      <h3>Add Device</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-device'); loadDevices()">✕</button>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-add-device'); loadDevices()">Close</button>
-      <button class="btn btn-sm" id="ad-btn" onclick="addDevice()">Generate Token</button>
+    <div class="modal-body">
+      <div class="info-banner">A unique agent token will be generated. Run the agent script on the device with this token to start reporting health data.</div>
+      <div class="field"><label>Device Name</label><input id="ad-name" placeholder="e.g. dev-server-01" /></div>
+      <div id="ad-result" style="display:none">
+        <div class="field"><label>Agent Token — save this, shown once</label><div class="token-box" id="ad-token"></div></div>
+        <div class="field"><label>Run on the device</label><div class="token-box" id="ad-install"></div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-device'); loadDevices()">Close</button>
+      <button class="btn btn-primary" id="ad-btn" onclick="addDevice()">Generate Token</button>
     </div>
   </div>
 </div>
@@ -339,12 +654,11 @@ async function initAuth() {
     } catch {}
     localStorage.removeItem(TOKEN_KEY);
   }
-  // Check if first-time setup is needed
   try {
     const res = await fetch('/api/auth');
     const data = await res.json();
     if (data.needsSetup) {
-      document.getElementById('auth-subtitle').textContent = 'Create your admin account';
+      document.getElementById('auth-subtitle').textContent = 'Create your administrator account';
       document.getElementById('auth-btn').textContent = 'Create Account';
       document.getElementById('setup-fields').style.display = 'block';
       document.getElementById('login-username').style.display = 'none';
@@ -377,10 +691,17 @@ document.getElementById('auth-btn').onclick = async () => {
   }
 };
 
+// Enter key submits auth
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('auth-btn').click();
+});
+
 function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  document.getElementById('admin-name').textContent = currentAdmin.username;
+  const name = currentAdmin.username;
+  document.getElementById('admin-name').textContent = name;
+  document.getElementById('admin-avatar').textContent = name[0].toUpperCase();
   loadOverview();
 }
 
@@ -411,41 +732,57 @@ document.querySelectorAll('.nav-item[data-page]').forEach(el => {
 // ── Overview ──
 async function loadOverview() {
   try {
-    const [tickets, devices] = await Promise.all([
-      api('/api/tickets'),
-      api('/api/devices')
-    ]);
+    const [tickets, devices] = await Promise.all([api('/api/tickets'), api('/api/devices')]);
+    const fiveMin = 5 * 60 * 1000;
+
     const open = tickets.filter(t => t.status === 'open').length;
     const inprog = tickets.filter(t => t.status === 'in_progress').length;
-    const fiveMin = 5 * 60 * 1000;
-    const online = devices.filter(d => new Date(d.lastSeen) > new Date(Date.now() - fiveMin)).length;
+    const onlineDevices = devices.filter(d => new Date(d.lastSeen) > new Date(Date.now() - fiveMin));
+
     document.getElementById('stat-open').textContent = open;
     document.getElementById('stat-inprog').textContent = inprog;
-    document.getElementById('stat-online').textContent = online;
-    document.getElementById('stat-offline').textContent = devices.length - online;
+    document.getElementById('stat-online').textContent = onlineDevices.length;
+    document.getElementById('stat-offline').textContent = devices.length - onlineDevices.length;
 
-    // Recent tickets
+    // Nav badges
+    document.getElementById('nav-ticket-count').textContent = open + inprog || '0';
+    document.getElementById('nav-device-count').textContent = devices.length || '0';
+
+    // Recent tickets (top 6)
     const tbody = document.getElementById('overview-tickets');
-    const recent = tickets.slice(0, 8);
+    const recent = tickets.filter(t => t.status !== 'closed').slice(0, 6);
     tbody.innerHTML = recent.length ? recent.map(t => `
       <tr onclick="openTicket('${t.id}')">
-        <td>${esc(t.title)}</td>
+        <td class="td-primary">${esc(t.title)}</td>
         <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
         <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-      </tr>`).join('') : '<tr><td colspan="3" class="empty">No tickets</td></tr>';
+      </tr>`).join('') : `<tr><td colspan="3" class="empty"><div class="empty-icon">✓</div>No open tickets</td></tr>`;
 
     // Devices
     const dbody = document.getElementById('overview-devices');
     dbody.innerHTML = devices.length ? devices.map(d => {
       const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
       const snap = d.snapshots && d.snapshots[0];
-      const cpu = snap ? snap.cpuPercent.toFixed(0) + '%' : '—';
+      const cpu = snap && snap.cpuPercent != null ? snap.cpuPercent.toFixed(0) + '%' : '—';
       return `<tr onclick="openDevice('${d.id}')">
-        <td>${esc(d.name)}</td>
-        <td><span class="online-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>${isOnline ? 'Online' : 'Offline'}</td>
-        <td>${cpu}</td>
+        <td class="td-primary">${esc(d.name)}</td>
+        <td><div class="status-cell"><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span><span class="td-muted">${isOnline ? 'Online' : 'Offline'}</span></div></td>
+        <td class="td-muted">${cpu}</td>
       </tr>`;
-    }).join('') : '<tr><td colspan="3" class="empty">No devices registered</td></tr>';
+    }).join('') : `<tr><td colspan="3" class="empty">No devices registered</td></tr>`;
+
+    // Assigned to me
+    const mine = tickets.filter(t => t.assignedTo === currentAdmin.username && t.status !== 'closed');
+    const mineTbody = document.getElementById('overview-mine');
+    mineTbody.innerHTML = mine.length ? mine.map(t => `
+      <tr onclick="openTicket('${t.id}')">
+        <td class="td-primary">${esc(t.title)}</td>
+        <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
+        <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
+        <td class="td-muted">${t.device ? esc(t.device.name) : '—'}</td>
+        <td class="td-dim">${timeAgo(t.updatedAt)}</td>
+      </tr>`).join('') : `<tr><td colspan="5" class="empty">No tickets assigned to you</td></tr>`;
+
   } catch (e) { console.error(e); }
 }
 
@@ -454,16 +791,17 @@ async function loadTickets() {
   showPage('tickets');
   try {
     const tickets = await api('/api/tickets');
+    document.getElementById('tickets-subtitle').textContent = `${tickets.length} ticket${tickets.length !== 1 ? 's' : ''}`;
     const tbody = document.getElementById('tickets-tbody');
     tbody.innerHTML = tickets.length ? tickets.map(t => `
       <tr onclick="openTicket('${t.id}')">
-        <td>${esc(t.title)}</td>
-        <td>${t.device ? esc(t.device.name) : '<span style="color:var(--text-muted)">—</span>'}</td>
+        <td class="td-primary">${esc(t.title)}</td>
+        <td class="td-muted">${t.device ? esc(t.device.name) : '<span class="td-dim">—</span>'}</td>
         <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
         <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-        <td>${t.assignedTo ? esc(t.assignedTo) : '<span style="color:var(--text-muted)">Unassigned</span>'}</td>
-        <td style="color:var(--text-muted)">${timeAgo(t.createdAt)}</td>
-      </tr>`).join('') : '<tr><td colspan="6" class="empty">No tickets yet</td></tr>';
+        <td class="td-muted">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">Unassigned</span>'}</td>
+        <td class="td-dim">${timeAgo(t.createdAt)}</td>
+      </tr>`).join('') : `<tr><td colspan="6" class="empty">No tickets yet — create one to get started</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -474,43 +812,46 @@ async function openTicket(id) {
     const t = await api('/api/tickets?id=' + id);
     const el = document.getElementById('ticket-detail-content');
     el.innerHTML = `
-      <div class="ticket-detail-header">
-        <h2 style="flex:1">${esc(t.title)}</h2>
-        <span class="badge badge-${t.priority}">${t.priority}</span>
-        <span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span>
-      </div>
-      <div class="ticket-meta">
-        <span>Created ${timeAgo(t.createdAt)}</span>
-        ${t.device ? `<span>Device: ${esc(t.device.name)}</span>` : ''}
-        ${t.assignedTo ? `<span>Assigned: ${esc(t.assignedTo)}</span>` : ''}
-      </div>
-      <div class="ticket-body">${esc(t.description)}</div>
-
-      <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
-        ${['open','in_progress','resolved','closed'].map(s =>
-          `<button class="btn btn-sm ${t.status===s?'':'btn-ghost'}" onclick="updateTicketStatus('${t.id}','${s}')">${s.replace('_',' ')}</button>`
-        ).join('')}
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <select id="td-priority" onchange="updateTicketPriority('${t.id}',this.value)" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:13px">
-            ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p}</option>`).join('')}
-          </select>
+      <div class="ticket-header">
+        <div class="ticket-title-row">
+          <div class="ticket-title">${esc(t.title)}</div>
+          <span class="badge badge-${t.priority}">${t.priority}</span>
+          <span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span>
+        </div>
+        <div class="ticket-meta-row">
+          <span>Created ${timeAgo(t.createdAt)}</span>
+          ${t.device ? `<span>· Device: <strong>${esc(t.device.name)}</strong></span>` : ''}
+          ${t.assignedTo ? `<span>· Assigned to <strong>${esc(t.assignedTo)}</strong></span>` : '<span>· Unassigned</span>'}
         </div>
       </div>
 
-      <div class="section-title">Comments (${t.comments.length})</div>
-      <div class="comment-list" id="comment-list-${t.id}">
+      <div class="ticket-desc">${esc(t.description)}</div>
+
+      <div class="status-bar">
+        ${['open','in_progress','resolved','closed'].map(s =>
+          `<button class="status-btn ${t.status===s ? 'active-'+s : ''}" onclick="updateTicketStatus('${t.id}','${s}')">${s.replace('_',' ')}</button>`
+        ).join('')}
+        <select class="priority-select" onchange="updateTicketPriority('${t.id}',this.value)">
+          ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="section-hd">Activity · ${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</div>
+      <div class="comments" id="comment-list-${t.id}">
         ${t.comments.map(c => `
           <div class="comment">
-            <div class="comment-header">
+            <div class="comment-top">
               <span class="comment-author">${esc(c.authorName)}</span>
               <span class="comment-time">${timeAgo(c.createdAt)}</span>
             </div>
-            <div class="comment-text">${esc(c.content)}</div>
-          </div>`).join('') || '<p style="color:var(--text-muted);font-size:14px">No comments yet.</p>'}
+            <div class="comment-body">${esc(c.content)}</div>
+          </div>`).join('') || `<div style="color:var(--text-3);font-size:13px;padding:4px 0">No comments yet.</div>`}
       </div>
-      <div class="add-comment">
-        <textarea id="new-comment-${t.id}" placeholder="Add a comment..."></textarea>
-        <button class="btn btn-sm" onclick="addComment('${t.id}')">Post</button>
+      <div class="comment-input-row">
+        <div class="field" style="flex:1;margin:0">
+          <textarea id="new-comment-${t.id}" placeholder="Add a comment..." style="margin:0"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="addComment('${t.id}')">Post</button>
       </div>`;
   } catch (e) { console.error(e); }
 }
@@ -549,15 +890,15 @@ async function loadDevices() {
     tbody.innerHTML = devices.length ? devices.map(d => {
       const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
       return `<tr onclick="openDevice('${d.id}')">
-        <td><strong>${esc(d.name)}</strong></td>
-        <td>${esc(d.hostname)}</td>
-        <td>${d.os ? esc(d.os) : '<span style="color:var(--text-muted)">—</span>'}</td>
-        <td>${d.ipAddress ? esc(d.ipAddress) : '<span style="color:var(--text-muted)">—</span>'}</td>
-        <td><span class="online-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>${isOnline ? 'Online' : 'Offline'}</td>
-        <td style="color:var(--text-muted)">${timeAgo(d.lastSeen)}</td>
-        <td>${d._count ? d._count.tickets : 0}</td>
+        <td class="td-primary">${esc(d.name)}</td>
+        <td class="td-muted">${esc(d.hostname)}</td>
+        <td class="td-muted">${d.os ? esc(d.os) : '<span class="td-dim">—</span>'}</td>
+        <td class="td-muted">${d.ipAddress ? esc(d.ipAddress) : '<span class="td-dim">—</span>'}</td>
+        <td><div class="status-cell"><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span><span class="td-muted">${isOnline ? 'Online' : 'Offline'}</span></div></td>
+        <td class="td-dim">${timeAgo(d.lastSeen)}</td>
+        <td class="td-muted">${d._count ? d._count.tickets : 0}</td>
       </tr>`;
-    }).join('') : '<tr><td colspan="7" class="empty">No devices registered yet. Click "+ Add Device" to get started.</td></tr>';
+    }).join('') : `<tr><td colspan="7" class="empty">No devices registered yet. Click "Add Device" to get started.</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -570,58 +911,66 @@ async function openDevice(id) {
     const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
     const snap = d.snapshots && d.snapshots[0];
 
-    const cpuPct = snap ? snap.cpuPercent : null;
-    const ramPct = snap && snap.ramTotalGb ? (snap.ramUsedGb / snap.ramTotalGb * 100) : null;
+    const cpuPct  = snap && snap.cpuPercent  != null ? snap.cpuPercent  : null;
+    const ramPct  = snap && snap.ramTotalGb  ? (snap.ramUsedGb  / snap.ramTotalGb  * 100) : null;
     const diskPct = snap && snap.diskTotalGb ? (snap.diskUsedGb / snap.diskTotalGb * 100) : null;
 
-    function pctColor(v) { return v > 85 ? 'fill-red' : v > 60 ? 'fill-yellow' : 'fill-green'; }
-    function bar(v) { return v !== null ? `<div class="progress-bar"><div class="progress-fill ${pctColor(v)}" style="width:${v.toFixed(0)}%"></div></div>` : ''; }
+    function pctClass(v) { return v > 85 ? 'pbar-red' : v > 60 ? 'pbar-amber' : 'pbar-green'; }
+    function metricBar(v) {
+      if (v == null) return '';
+      return `<div class="metric-bar"><div class="metric-bar-fill ${pctClass(v)}" style="width:${Math.min(100,v).toFixed(0)}%"></div></div>`;
+    }
 
     document.getElementById('device-detail-content').innerHTML = `
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
-        <h2>${esc(d.name)}</h2>
-        <span class="online-dot ${isOnline ? 'dot-online' : 'dot-offline'}" style="width:10px;height:10px"></span>
-        <span style="color:var(--text-muted);font-size:14px">${isOnline ? 'Online' : 'Offline'} · Last seen ${timeAgo(d.lastSeen)}</span>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+        <div style="font-size:20px;font-weight:600;letter-spacing:-0.02em">${esc(d.name)}</div>
+        <div class="status-cell">
+          <span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>
+          <span class="td-muted" style="font-size:13px">${isOnline ? 'Online' : 'Offline'}</span>
+        </div>
       </div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">
-        ${d.hostname} · ${d.os || 'Unknown OS'} · ${d.ipAddress || 'Unknown IP'}
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:24px">
+        ${esc(d.hostname)} &nbsp;·&nbsp; ${d.os || 'Unknown OS'} &nbsp;·&nbsp; ${d.ipAddress || 'Unknown IP'} &nbsp;·&nbsp; Last seen ${timeAgo(d.lastSeen)}
       </div>
 
       <div class="metric-grid">
         <div class="metric-card">
-          <div class="metric-label">CPU</div>
-          <div class="metric-value">${cpuPct !== null ? cpuPct.toFixed(0) + '%' : '—'}</div>
-          ${bar(cpuPct)}
+          <div class="metric-lbl">CPU Usage</div>
+          <div class="metric-val">${cpuPct != null ? cpuPct.toFixed(1) + '%' : '—'}</div>
+          ${metricBar(cpuPct)}
         </div>
         <div class="metric-card">
-          <div class="metric-label">RAM</div>
-          <div class="metric-value">${snap && snap.ramUsedGb !== null ? snap.ramUsedGb.toFixed(1) + ' GB' : '—'}</div>
-          <div class="metric-sub">${snap && snap.ramTotalGb !== null ? 'of ' + snap.ramTotalGb.toFixed(1) + ' GB' : ''}</div>
-          ${bar(ramPct)}
+          <div class="metric-lbl">Memory</div>
+          <div class="metric-val">${snap && snap.ramUsedGb != null ? snap.ramUsedGb.toFixed(1) + ' GB' : '—'}</div>
+          <div class="metric-sub">${snap && snap.ramTotalGb != null ? 'of ' + snap.ramTotalGb.toFixed(1) + ' GB total' : ''}</div>
+          ${metricBar(ramPct)}
         </div>
         <div class="metric-card">
-          <div class="metric-label">Disk</div>
-          <div class="metric-value">${snap && snap.diskUsedGb !== null ? snap.diskUsedGb.toFixed(1) + ' GB' : '—'}</div>
-          <div class="metric-sub">${snap && snap.diskTotalGb !== null ? 'of ' + snap.diskTotalGb.toFixed(1) + ' GB' : ''}</div>
-          ${bar(diskPct)}
+          <div class="metric-lbl">Disk</div>
+          <div class="metric-val">${snap && snap.diskUsedGb != null ? snap.diskUsedGb.toFixed(1) + ' GB' : '—'}</div>
+          <div class="metric-sub">${snap && snap.diskTotalGb != null ? 'of ' + snap.diskTotalGb.toFixed(1) + ' GB total' : ''}</div>
+          ${metricBar(diskPct)}
         </div>
         <div class="metric-card">
-          <div class="metric-label">Uptime</div>
-          <div class="metric-value" style="font-size:18px">${snap && snap.uptimeSeconds !== null ? formatUptime(snap.uptimeSeconds) : '—'}</div>
+          <div class="metric-lbl">Uptime</div>
+          <div class="metric-val" style="font-size:18px">${snap && snap.uptimeSeconds != null ? formatUptime(snap.uptimeSeconds) : '—'}</div>
         </div>
       </div>
 
-      <div class="section-title">Open Tickets</div>
-      <div class="card" style="margin-bottom:24px">
-        <table><thead><tr><th>Title</th><th>Priority</th><th>Status</th></tr></thead>
-        <tbody>
-          ${d.tickets.filter(t => t.status !== 'closed').map(t => `
-            <tr onclick="openTicket('${t.id}')">
-              <td>${esc(t.title)}</td>
-              <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-              <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-            </tr>`).join('') || '<tr><td colspan="3" class="empty">No open tickets</td></tr>'}
-        </tbody></table>
+      <div class="section-hd" style="margin-bottom:12px">Open Tickets</div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Assigned</th></tr></thead>
+          <tbody>
+            ${d.tickets.filter(t => t.status !== 'closed').map(t => `
+              <tr onclick="openTicket('${t.id}')">
+                <td class="td-primary">${esc(t.title)}</td>
+                <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
+                <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
+                <td class="td-muted">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">—</span>'}</td>
+              </tr>`).join('') || '<tr><td colspan="4" class="empty">No open tickets for this device</td></tr>'}
+          </tbody>
+        </table>
       </div>`;
   } catch (e) { console.error(e); }
 }
@@ -631,11 +980,10 @@ function openNewTicketModal() {
   document.getElementById('nt-title').value = '';
   document.getElementById('nt-desc').value = '';
   document.getElementById('nt-assigned').value = '';
-  // Populate device dropdown
   api('/api/devices').then(devices => {
     const sel = document.getElementById('nt-device');
-    sel.innerHTML = '<option value="">— None —</option>' + devices.map(d =>
-      `<option value="${d.id}">${esc(d.name)}</option>`).join('');
+    sel.innerHTML = '<option value="">— None —</option>' +
+      devices.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('');
   }).catch(() => {});
   document.getElementById('modal-new-ticket').classList.add('open');
 }
@@ -657,7 +1005,7 @@ async function createTicket() {
 function openAddDeviceModal() {
   document.getElementById('ad-name').value = '';
   document.getElementById('ad-result').style.display = 'none';
-  document.getElementById('ad-btn').style.display = 'inline-block';
+  document.getElementById('ad-btn').style.display = 'inline-flex';
   document.getElementById('modal-add-device').classList.add('open');
 }
 
@@ -670,12 +1018,17 @@ async function addDevice() {
     document.getElementById('ad-install').textContent = `AGENT_TOKEN=${d.agentToken} RMM_URL=https://your-app.vercel.app node agent.js`;
     document.getElementById('ad-result').style.display = 'block';
     document.getElementById('ad-btn').style.display = 'none';
+    loadDevices();
   } catch (e) { alert(e.message); }
 }
 
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
 
 // ── Helpers ──
 function esc(s) {
@@ -702,11 +1055,6 @@ function formatUptime(seconds) {
   if (h > 0) return h + 'h ' + m + 'm';
   return m + 'm';
 }
-
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-});
 
 initAuth();
 </script>
