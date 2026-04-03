@@ -339,17 +339,24 @@ async function initAuth() {
     } catch {}
     localStorage.removeItem(TOKEN_KEY);
   }
-  // Check if first-time setup needed
+  // Check if first-time setup is needed
   try {
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'check' }) });
-    // Just show login
+    const res = await fetch('/api/auth');
+    const data = await res.json();
+    if (data.needsSetup) {
+      document.getElementById('auth-subtitle').textContent = 'Create your admin account';
+      document.getElementById('auth-btn').textContent = 'Create Account';
+      document.getElementById('setup-fields').style.display = 'block';
+      document.getElementById('login-username').style.display = 'none';
+    }
   } catch {}
   document.getElementById('auth-screen').style.display = 'flex';
 }
 
 document.getElementById('auth-btn').onclick = async () => {
   const isSetup = document.getElementById('setup-fields').style.display !== 'none';
-  const username = (isSetup ? document.getElementById('setup-username') : document.getElementById('login-username')).value.trim();
+  const usernameEl = isSetup ? document.getElementById('setup-username') : document.getElementById('login-username');
+  const username = usernameEl.value.trim();
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('auth-err');
   errEl.style.display = 'none';
@@ -365,10 +372,6 @@ document.getElementById('auth-btn').onclick = async () => {
     currentAdmin = { username: data.username };
     showApp();
   } catch (e) {
-    if (e.message === 'Admin already exists') {
-      document.getElementById('setup-fields').style.display = 'none';
-      document.getElementById('login-username').value = username;
-    }
     errEl.textContent = e.message;
     errEl.style.display = 'block';
   }
@@ -704,23 +707,6 @@ function formatUptime(seconds) {
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
-
-// Check if first-time setup
-async function checkSetup() {
-  try {
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'setup', username: '__check__', email: '__check__', password: '__check__' })
-    });
-    const data = await res.json();
-    if (data.error === 'Admin already exists') {
-      // Normal login
-    } else if (res.status === 201 || res.status === 200) {
-      // Shouldn't happen with __check__ creds but handle anyway
-    }
-  } catch {}
-}
 
 initAuth();
 </script>

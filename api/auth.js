@@ -5,8 +5,13 @@ const bcrypt = require('bcryptjs');
 module.exports = async function handler(req, res) {
   try {
     if (req.method === 'GET') {
+      // Allow unauthenticated check to see if first-time setup is needed
       const user = fromReq(req);
-      if (!user) return res.status(401).json({ error: 'Unauthorized' });
+      if (!user) {
+        const count = await prisma.adminUser.count();
+        if (count === 0) return res.json({ needsSetup: true });
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
       const admin = await prisma.adminUser.findUnique({ where: { id: user.id } });
       if (!admin) return res.status(401).json({ error: 'User not found' });
       return res.json({ id: admin.id, username: admin.username, email: admin.email });
