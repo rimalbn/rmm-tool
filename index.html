@@ -5,478 +5,622 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RMM Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #09090b;
-      --surface:  #111113;
-      --surface2: #18181b;
-      --surface3: #1f1f23;
-      --border:   #27272a;
-      --border2:  #3f3f46;
-      --accent:   #3b82f6;
-      --accent-dim: rgba(59,130,246,0.12);
-      --text:     #f4f4f5;
-      --text-2:   #a1a1aa;
-      --text-3:   #52525b;
-      --green:    #22c55e;
-      --green-dim: rgba(34,197,94,0.1);
-      --red:      #ef4444;
-      --red-dim:  rgba(239,68,68,0.1);
-      --amber:    #f59e0b;
-      --amber-dim: rgba(245,158,11,0.1);
-      --blue-dim: rgba(59,130,246,0.1);
+      --bg:          #0d1117;
+      --bg2:         #0a0d12;
+      --card:        #161c27;
+      --card-hover:  #1c2333;
+      --border:      #21293a;
+      --border-hi:   #2d3a50;
+      --accent:      #4e7efa;
+      --accent-glow: rgba(78,126,250,0.15);
+      --accent-dim:  rgba(78,126,250,0.08);
+      --text:        #e6edf3;
+      --text-2:      #8b949e;
+      --text-3:      #4a5568;
+      --green:       #3fb950;
+      --green-dim:   rgba(63,185,80,0.1);
+      --red:         #f85149;
+      --red-dim:     rgba(248,81,73,0.1);
+      --amber:       #d29922;
+      --amber-dim:   rgba(210,153,34,0.12);
+      --purple:      #a371f7;
+      --purple-dim:  rgba(163,113,247,0.1);
     }
 
-    html, body { height: 100%; }
+    html, body { height: 100%; overflow: hidden; }
     body {
-      background: var(--bg); color: var(--text);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+      background: var(--bg2); color: var(--text);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-size: 13px; line-height: 1.6;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ─── Auth ─── */
+    /* ════════════════════════════════
+       AUTH
+    ════════════════════════════════ */
     #auth-screen {
-      display: none; align-items: center; justify-content: center;
-      min-height: 100vh; background: var(--bg);
+      display: none; min-height: 100vh; align-items: center; justify-content: center;
+      background: var(--bg2);
+      background-image: radial-gradient(ellipse at 30% 20%, rgba(78,126,250,0.06) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(163,113,247,0.04) 0%, transparent 60%);
     }
-    .auth-wrap {
-      width: 340px;
+
+    .auth-card {
+      width: 380px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px; box-shadow: 0 32px 80px rgba(0,0,0,0.5);
     }
-    .auth-brand {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 32px;
-    }
-    .auth-brand-icon {
-      width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
+
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--accent);
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 1px rgba(78,126,250,0.3), 0 8px 20px rgba(78,126,250,0.25);
     }
-    .auth-brand-icon svg { width: 16px; height: 16px; fill: #fff; }
-    .auth-brand-name { font-size: 15px; font-weight: 600; }
-    .auth-wrap h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
-    .auth-wrap p { color: var(--text-2); font-size: 13px; margin-bottom: 24px; }
+    .brand-mark svg { width: 16px; height: 16px; fill: #fff; }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+
+    .auth-title { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .auth-sub { font-size: 13px; color: var(--text-2); margin-bottom: 24px; }
+
     .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; letter-spacing: 0.02em; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-2); margin-bottom: 7px;
+    }
     .field input, .field select, .field textarea {
-      width: 100%; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text); padding: 8px 11px; font-size: 13px;
-      font-family: inherit; outline: none; transition: border-color 0.15s;
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); padding: 10px 13px;
+      font-size: 13px; font-family: inherit; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
-    .field textarea { resize: vertical; min-height: 80px; }
-    .field select { cursor: pointer; }
-    .auth-err { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--text-3); }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .field textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+    .field select { cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%238b949e' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 32px;
+    }
 
-    /* ─── Buttons ─── */
+    .auth-err {
+      color: var(--red); font-size: 12px; margin-top: 10px; display: none;
+      background: var(--red-dim); border: 1px solid rgba(248,81,73,0.2);
+      border-radius: 6px; padding: 8px 12px;
+    }
+
+    /* ════════════════════════════════
+       BUTTONS
+    ════════════════════════════════ */
     .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
-      border: none; border-radius: 6px; padding: 7px 14px; transition: all 0.15s; white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; border-radius: 8px; padding: 8px 16px;
+      transition: all 0.15s; white-space: nowrap; letter-spacing: -0.01em;
+      text-decoration: none; user-select: none;
     }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #2563eb; }
-    .btn-full { width: 100%; justify-content: center; padding: 9px 14px; }
+    .btn:active { transform: scale(0.97); }
+    .btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(78,126,250,0.4);
+    }
+    .btn-primary:hover { background: #6090ff; box-shadow: 0 4px 14px rgba(78,126,250,0.35); }
+    .btn-full { width: 100%; padding: 11px; }
+
     .btn-outline {
-      background: transparent; color: var(--text-2); border: 1px solid var(--border);
+      background: transparent; color: var(--text-2);
+      border: 1px solid var(--border); box-shadow: none;
     }
-    .btn-outline:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+    .btn-outline:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-hi); }
+
     .btn-ghost { background: transparent; color: var(--text-2); }
-    .btn-ghost:hover { background: var(--surface2); color: var(--text); }
-    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-    .btn-danger:hover { background: var(--red); color: #fff; }
+    .btn-ghost:hover { background: var(--card-hover); color: var(--text); }
 
-    /* ─── Layout ─── */
+    .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* ════════════════════════════════
+       APP SHELL
+    ════════════════════════════════ */
     #app { display: none; height: 100vh; }
-    .layout { display: flex; height: 100%; overflow: hidden; }
+    .layout { display: flex; height: 100%; }
 
-    /* ─── Sidebar ─── */
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
     .sidebar {
-      width: 216px; flex-shrink: 0; background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
+      width: 228px; flex-shrink: 0;
+      background: var(--card); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; height: 100%;
     }
-    .sidebar-logo {
-      height: 56px; display: flex; align-items: center; gap: 9px;
-      padding: 0 16px; border-bottom: 1px solid var(--border);
+
+    .sidebar-head {
+      height: 58px; display: flex; align-items: center; gap: 10px;
+      padding: 0 18px; border-bottom: 1px solid var(--border);
     }
     .logo-icon {
-      width: 26px; height: 26px; background: var(--accent); border-radius: 6px;
+      width: 28px; height: 28px; border-radius: 7px; background: var(--accent);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(78,126,250,0.4);
     }
     .logo-icon svg { width: 13px; height: 13px; fill: #fff; }
-    .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+    .logo-text { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
 
-    .nav-section { padding: 8px 8px 0; }
-    .nav-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text-3); padding: 8px 8px 4px;
+    .nav-group { padding: 10px 10px 0; }
+    .nav-group-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); padding: 6px 8px 3px;
     }
+
     .nav-item {
-      display: flex; align-items: center; gap: 9px; padding: 7px 8px;
-      border-radius: 6px; cursor: pointer; color: var(--text-2); font-size: 13px;
-      font-weight: 500; transition: all 0.12s; margin-bottom: 1px;
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 9px; border-radius: 7px; cursor: pointer;
+      color: var(--text-2); font-size: 13px; font-weight: 500;
+      transition: background 0.12s, color 0.12s; margin-bottom: 1px; position: relative;
     }
-    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; transition: opacity 0.12s; opacity: 0.6; }
+    .nav-item:hover { background: var(--card-hover); color: var(--text); }
     .nav-item:hover svg { opacity: 1; }
-    .nav-item.active { background: var(--accent-dim); color: var(--accent); }
+    .nav-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
     .nav-item.active svg { opacity: 1; }
-    .nav-badge {
-      margin-left: auto; background: var(--surface3); color: var(--text-2);
-      font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 10px;
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 2.5px; border-radius: 2px; background: var(--accent);
     }
-    .nav-item.active .nav-badge { background: rgba(59,130,246,0.2); color: var(--accent); }
+
+    .nav-pill {
+      margin-left: auto; font-size: 11px; font-weight: 700;
+      background: var(--card-hover); color: var(--text-2);
+      padding: 1px 7px; border-radius: 20px; min-width: 20px; text-align: center;
+    }
+    .nav-item.active .nav-pill { background: var(--accent-glow); color: var(--accent); }
 
     .sidebar-footer {
-      margin-top: auto; padding: 12px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; gap: 9px;
+      margin-top: auto; padding: 14px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
-    .avatar {
-      width: 28px; height: 28px; border-radius: 50%; background: var(--accent-dim);
-      border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600; color: var(--accent); flex-shrink: 0; text-transform: uppercase;
+    .user-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; text-transform: uppercase;
     }
-    .sidebar-footer-info { flex: 1; min-width: 0; }
-    .footer-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .footer-role { font-size: 11px; color: var(--text-3); }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 11px; color: var(--text-3); }
     .signout-btn {
       background: none; border: none; cursor: pointer; color: var(--text-3);
-      padding: 4px; border-radius: 4px; display: flex; transition: color 0.15s;
+      padding: 5px; border-radius: 5px; display: flex; align-items: center;
+      transition: color 0.15s, background 0.15s;
     }
-    .signout-btn:hover { color: var(--text-2); }
+    .signout-btn:hover { color: var(--text-2); background: var(--card-hover); }
     .signout-btn svg { width: 14px; height: 14px; }
 
-    /* ─── Main ─── */
-    .main { flex: 1; overflow-y: auto; background: var(--bg); }
-    .main-inner { padding: 28px 32px; max-width: 1200px; }
+    /* ════════════════════════════════
+       MAIN AREA
+    ════════════════════════════════ */
+    .main {
+      flex: 1; overflow-y: auto; background: var(--bg);
+      scroll-behavior: smooth;
+    }
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+    .page-wrap { padding: 32px 36px; max-width: 1100px; }
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ─── Page Header ─── */
-    .page-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+    /* ════════════════════════════════
+       PAGE HEADERS
+    ════════════════════════════════ */
+    .page-hd {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 28px;
     }
-    .page-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
-    .page-subtitle { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+    .page-hd-left {}
+    .page-hd h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; }
+    .page-hd p { font-size: 13px; color: var(--text-2); margin-top: 3px; }
 
-    /* ─── Stat Cards ─── */
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    /* ════════════════════════════════
+       STAT CARDS
+    ════════════════════════════════ */
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
     .stat-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-      padding: 16px 18px; position: relative; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px; transition: border-color 0.2s, transform 0.15s;
+      cursor: default;
     }
-    .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 10px; }
-    .stat-val { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
-    .stat-sub { font-size: 11px; color: var(--text-3); margin-top: 5px; }
-    .stat-indicator {
-      position: absolute; top: 0; right: 0; width: 3px; height: 100%; border-radius: 0 8px 8px 0;
+    .stat-card:hover { border-color: var(--border-hi); transform: translateY(-1px); }
+    .stat-card-top {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .stat-label { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; color: var(--text-2); }
+    .stat-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-icon svg { width: 14px; height: 14px; }
+    .stat-val { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 5px; }
+    .stat-hint { font-size: 11px; color: var(--text-3); }
+
+    /* ════════════════════════════════
+       SECTION LABELS
+    ════════════════════════════════ */
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
 
-    /* ─── Grid Layouts ─── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3-1 { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    /* ─── Cards / Tables ─── */
+    /* ════════════════════════════════
+       CARDS + TABLES
+    ════════════════════════════════ */
     .card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
     }
-    .card-header {
+    .card-hd {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
     }
-    .card-title { font-size: 13px; font-weight: 600; }
-    .card-count { font-size: 12px; color: var(--text-3); margin-left: 6px; }
+    .card-hd-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+    .card-hd-action { font-size: 12px; color: var(--text-2); cursor: pointer; transition: color 0.15s; }
+    .card-hd-action:hover { color: var(--accent); }
+
+    .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
 
     table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--bg2); }
     thead th {
-      padding: 0 18px; height: 36px; text-align: left;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 10px 18px; text-align: left;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--text-3); border-bottom: 1px solid var(--border);
     }
-    tbody td { padding: 0 18px; height: 44px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody td { padding: 0 18px; height: 46px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tbody tr:last-child td { border-bottom: none; }
-    tbody tr { transition: background 0.1s; }
     tbody tr[onclick] { cursor: pointer; }
-    tbody tr:hover td { background: var(--surface2); }
+    tbody tr[onclick]:hover td { background: rgba(78,126,250,0.03); }
+    tbody tr[onclick]:hover .td-primary { color: var(--accent); }
 
-    .td-primary { font-weight: 500; color: var(--text); }
-    .td-muted { color: var(--text-2); }
-    .td-dim { color: var(--text-3); }
+    .td-primary { font-weight: 500; color: var(--text); transition: color 0.12s; }
+    .td-secondary { color: var(--text-2); }
+    .td-dim { color: var(--text-3); font-size: 12px; }
 
-    /* ─── Badges ─── */
+    /* ════════════════════════════════
+       BADGES
+    ════════════════════════════════ */
     .badge {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
-      letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap;
+      padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;
     }
-    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
-    .badge-open { background: var(--blue-dim); color: #60a5fa; }
-    .badge-open::before { background: #60a5fa; }
-    .badge-in_progress { background: var(--amber-dim); color: #fbbf24; }
-    .badge-in_progress::before { background: #fbbf24; }
-    .badge-resolved { background: var(--green-dim); color: #4ade80; }
-    .badge-resolved::before { background: #4ade80; }
-    .badge-closed { background: var(--surface3); color: var(--text-3); }
-    .badge-closed::before { background: var(--text-3); }
+    .badge-open { background: rgba(78,126,250,0.12); color: #7aa2ff; border: 1px solid rgba(78,126,250,0.2); }
+    .badge-open .badge-dot { background: #7aa2ff; }
+    .badge-in_progress { background: var(--amber-dim); color: #e3b341; border: 1px solid rgba(210,153,34,0.2); }
+    .badge-in_progress .badge-dot { background: #e3b341; }
+    .badge-resolved { background: var(--green-dim); color: #3fb950; border: 1px solid rgba(63,185,80,0.2); }
+    .badge-resolved .badge-dot { background: #3fb950; }
+    .badge-closed { background: rgba(255,255,255,0.04); color: var(--text-3); border: 1px solid var(--border); }
+    .badge-closed .badge-dot { background: var(--text-3); }
 
-    .badge-low { background: var(--green-dim); color: #4ade80; }
-    .badge-low::before { background: #4ade80; }
-    .badge-medium { background: var(--amber-dim); color: #fbbf24; }
-    .badge-medium::before { background: #fbbf24; }
-    .badge-high { background: var(--red-dim); color: #f87171; }
-    .badge-high::before { background: #f87171; }
-    .badge-critical { background: var(--red); color: #fff; }
-    .badge-critical::before { background: rgba(255,255,255,0.7); }
+    .badge-low { background: var(--green-dim); color: #3fb950; border: 1px solid rgba(63,185,80,0.2); }
+    .badge-low .badge-dot { background: #3fb950; }
+    .badge-medium { background: var(--amber-dim); color: #e3b341; border: 1px solid rgba(210,153,34,0.2); }
+    .badge-medium .badge-dot { background: #e3b341; }
+    .badge-high { background: var(--red-dim); color: #f85149; border: 1px solid rgba(248,81,73,0.2); }
+    .badge-high .badge-dot { background: #f85149; }
+    .badge-critical { background: var(--red); color: #fff; border: 1px solid var(--red); }
+    .badge-critical .badge-dot { background: rgba(255,255,255,0.8); }
 
-    /* ─── Status dot ─── */
-    .status-cell { display: flex; align-items: center; gap: 7px; }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .dot-online { background: var(--green); box-shadow: 0 0 0 2px var(--green-dim); }
-    .dot-offline { background: var(--border2); }
+    /* ════════════════════════════════
+       STATUS INDICATOR
+    ════════════════════════════════ */
+    .status-cell { display: inline-flex; align-items: center; gap: 7px; }
+    .sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .sdot-on { background: var(--green); box-shadow: 0 0 0 2px var(--green-dim); animation: pulse 2.5s infinite; }
+    .sdot-off { background: var(--border-hi); }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 2px var(--green-dim); }
+      50% { box-shadow: 0 0 0 4px rgba(63,185,80,0.05); }
+    }
 
-    /* ─── Progress bars ─── */
-    .pbar-wrap { display: flex; align-items: center; gap: 8px; }
-    .pbar { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-    .pbar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+    /* ════════════════════════════════
+       EMPTY STATE
+    ════════════════════════════════ */
+    .empty-row td { text-align: center; padding: 36px 20px; color: var(--text-3); font-size: 13px; }
+    .empty-icon { font-size: 20px; margin-bottom: 6px; opacity: 0.3; }
+
+    /* ════════════════════════════════
+       DEVICE METRICS
+    ════════════════════════════════ */
+    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+    .metric-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+      transition: border-color 0.2s;
+    }
+    .metric-card:hover { border-color: var(--border-hi); }
+    .metric-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .metric-val { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+    .metric-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+    .pbar { height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+    .pbar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
     .pbar-green { background: var(--green); }
     .pbar-amber { background: var(--amber); }
     .pbar-red { background: var(--red); }
-    .pbar-label { font-size: 12px; font-weight: 500; color: var(--text-2); width: 36px; text-align: right; flex-shrink: 0; }
 
-    /* ─── Metric cards ─── */
-    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
-    .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
-    .metric-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
-    .metric-val { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-    .metric-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-    .metric-bar { margin-top: 10px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-    .metric-bar-fill { height: 100%; border-radius: 2px; }
-
-    /* ─── Modals ─── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px);
-      z-index: 200; display: none; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-      width: 500px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
-    }
-    .modal-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 20px; border-bottom: 1px solid var(--border);
-    }
-    .modal-head h3 { font-size: 14px; font-weight: 600; }
-    .modal-close {
-      background: none; border: none; cursor: pointer; color: var(--text-3);
-      padding: 4px; border-radius: 4px; display: flex; transition: color 0.15s;
-    }
-    .modal-close:hover { color: var(--text); }
-    .modal-close svg { width: 16px; height: 16px; }
-    .modal-body { padding: 20px; }
-    .modal-foot {
-      display: flex; justify-content: flex-end; gap: 8px;
-      padding: 14px 20px; border-top: 1px solid var(--border);
-    }
-
-    /* ─── Info banner ─── */
-    .info-banner {
-      background: var(--blue-dim); border: 1px solid rgba(59,130,246,0.2);
-      border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #93c5fd;
-      margin-bottom: 16px; line-height: 1.5;
-    }
-
-    /* ─── Token box ─── */
-    .token-box {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-      padding: 10px 12px; font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 12px; word-break: break-all; color: #4ade80; line-height: 1.6;
-    }
-
-    /* ─── Ticket detail ─── */
+    /* ════════════════════════════════
+       TICKET DETAIL
+    ════════════════════════════════ */
     .back-link {
-      display: inline-flex; align-items: center; gap: 6px; color: var(--text-2);
-      font-size: 13px; cursor: pointer; margin-bottom: 20px; transition: color 0.15s;
+      display: inline-flex; align-items: center; gap: 7px;
+      color: var(--text-2); font-size: 13px; font-weight: 500; cursor: pointer;
+      margin-bottom: 24px; transition: color 0.15s; text-decoration: none;
     }
-    .back-link:hover { color: var(--text); }
+    .back-link:hover { color: var(--accent); }
     .back-link svg { width: 14px; height: 14px; }
 
-    .ticket-header { margin-bottom: 20px; }
-    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-    .ticket-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; flex: 1; }
-    .ticket-meta-row { display: flex; gap: 16px; font-size: 12px; color: var(--text-2); }
+    .ticket-hd { margin-bottom: 24px; }
+    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .ticket-title { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; flex: 1; min-width: 0; line-height: 1.3; }
+    .ticket-meta {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      font-size: 12px; color: var(--text-2);
+    }
+    .ticket-meta span { display: flex; align-items: center; gap: 5px; }
 
     .ticket-desc {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-      padding: 16px; font-size: 13px; line-height: 1.7; color: var(--text-2); margin-bottom: 20px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; font-size: 13px; line-height: 1.8; color: var(--text-2);
+      margin-bottom: 24px;
     }
 
-    .status-bar {
-      display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+    .action-row {
+      display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; align-items: center;
+      padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px;
     }
-    .status-btn {
-      background: var(--surface2); border: 1px solid var(--border); color: var(--text-2);
-      border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 500;
+    .action-row-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-right: 4px; }
+    .status-pill {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text-2);
+      border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600;
       cursor: pointer; font-family: inherit; transition: all 0.15s;
     }
-    .status-btn:hover { background: var(--surface3); color: var(--text); }
-    .status-btn.active-open { background: var(--blue-dim); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
-    .status-btn.active-in_progress { background: var(--amber-dim); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
-    .status-btn.active-resolved { background: var(--green-dim); border-color: rgba(34,197,94,0.3); color: #4ade80; }
-    .status-btn.active-closed { background: var(--surface3); border-color: var(--border2); color: var(--text-2); }
-    .priority-select {
-      margin-left: auto; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text); padding: 5px 10px; font-size: 12px;
-      font-family: inherit; cursor: pointer; outline: none;
+    .status-pill:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-hi); }
+    .status-pill.pill-open { background: rgba(78,126,250,0.1); border-color: rgba(78,126,250,0.25); color: #7aa2ff; }
+    .status-pill.pill-in_progress { background: var(--amber-dim); border-color: rgba(210,153,34,0.25); color: #e3b341; }
+    .status-pill.pill-resolved { background: var(--green-dim); border-color: rgba(63,185,80,0.25); color: #3fb950; }
+    .status-pill.pill-closed { background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--text-3); }
+    .divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+    .priority-sel {
+      margin-left: auto; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 5px 30px 5px 10px;
+      font-size: 12px; font-family: inherit; cursor: pointer; outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%238b949e' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
     }
-    .priority-select:focus { border-color: var(--accent); }
+    .priority-sel:focus { border-color: var(--accent); }
 
-    .section-hd { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
-
-    .comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
-    .comment { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
-    .comment-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .comment-author { font-size: 12px; font-weight: 600; }
+    .activity-hd { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
+    .comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .comment {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px; transition: border-color 0.15s;
+    }
+    .comment:hover { border-color: var(--border-hi); }
+    .comment-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .comment-author { font-size: 13px; font-weight: 600; }
     .comment-time { font-size: 11px; color: var(--text-3); }
-    .comment-body { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    .comment-body { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+    .new-comment-row { display: flex; gap: 10px; align-items: flex-end; }
+    .new-comment-row .field { flex: 1; margin: 0; }
 
-    .comment-input-row { display: flex; gap: 8px; }
-    .comment-input-row textarea { flex: 1; }
-    .comment-input-row .btn { align-self: flex-end; }
-
-    /* ─── Empty state ─── */
-    .empty {
-      padding: 40px 20px; text-align: center; color: var(--text-3); font-size: 13px;
+    /* ════════════════════════════════
+       MODALS
+    ════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(10,13,18,0.8); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
     }
-    .empty-icon { font-size: 24px; margin-bottom: 8px; opacity: 0.4; }
+    .modal-overlay.open { display: flex; }
 
-    /* ─── Assigned-to-me section ─── */
-    .mine-section { margin-top: 20px; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      width: 500px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+      animation: modal-in 0.18s ease;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.96) translateY(6px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+
+    .modal-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+    }
+    .modal-hd h3 { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+    .modal-x {
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s; font-size: 16px; line-height: 1;
+    }
+    .modal-x:hover { background: var(--card-hover); color: var(--text); }
+
+    .modal-body { padding: 22px; }
+    .modal-ft {
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 16px 22px; border-top: 1px solid var(--border);
+      background: var(--bg2); border-radius: 0 0 14px 14px;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .info-note {
+      background: rgba(78,126,250,0.07); border: 1px solid rgba(78,126,250,0.18);
+      border-radius: 8px; padding: 11px 14px; font-size: 12px; color: #7aa2ff;
+      line-height: 1.6; margin-bottom: 18px;
+    }
+
+    .token-box {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 14px; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 12px; word-break: break-all; color: #3fb950; line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
   </style>
 </head>
 <body>
 
-<!-- ───── Auth ───── -->
+<!-- ══════════ AUTH ══════════ -->
 <div id="auth-screen">
-  <div class="auth-wrap">
-    <div class="auth-brand">
-      <div class="auth-brand-icon">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="brand-mark">
         <svg viewBox="0 0 16 16"><path d="M8 1L1 4v4c0 4 3 6.5 7 8 4-1.5 7-4 7-8V4L8 1z"/></svg>
       </div>
-      <span class="auth-brand-name">RMM Dashboard</span>
+      <span class="brand-name">RMM Dashboard</span>
     </div>
-    <h1>Welcome back</h1>
-    <p id="auth-subtitle">Sign in to your account to continue</p>
+
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub" id="auth-subtitle">Sign in to your admin account</div>
+
     <div id="setup-fields" style="display:none">
       <div class="field"><label>Username</label><input id="setup-username" placeholder="admin" autocomplete="username" /></div>
-      <div class="field"><label>Email</label><input id="setup-email" type="email" placeholder="you@example.com" autocomplete="email" /></div>
+      <div class="field"><label>Email address</label><input id="setup-email" type="email" placeholder="you@example.com" autocomplete="email" /></div>
     </div>
     <div class="field"><label>Username</label><input id="login-username" placeholder="admin" autocomplete="username" /></div>
-    <div class="field"><label>Password</label><input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+    <div class="field"><label>Password</label><input id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password" /></div>
+
     <button class="btn btn-primary btn-full" id="auth-btn">Sign In</button>
     <div class="auth-err" id="auth-err"></div>
   </div>
 </div>
 
-<!-- ───── App ───── -->
+<!-- ══════════ APP ══════════ -->
 <div id="app">
   <div class="layout">
 
     <!-- Sidebar -->
     <nav class="sidebar">
-      <div class="sidebar-logo">
+      <div class="sidebar-head">
         <div class="logo-icon">
           <svg viewBox="0 0 16 16"><path d="M8 1L1 4v4c0 4 3 6.5 7 8 4-1.5 7-4 7-8V4L8 1z"/></svg>
         </div>
         <span class="logo-text">RMM Tool</span>
       </div>
 
-      <div class="nav-section">
+      <div class="nav-group">
+        <div class="nav-group-label">Navigation</div>
         <div class="nav-item active" data-page="overview">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h6v6H1V1zm0 8h6v6H1V9zm8-8h6v6H9V1zm0 8h6v6H9V9z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
           Overview
         </div>
         <div class="nav-item" data-page="tickets">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1zm0 3v8h12V5H2zm2 2h8v1H4V7zm0 2h6v1H4V9z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1H2zm0 2h12v8H2V4zm2 2v1h8V6H4zm0 2v1h5V8H4z"/></svg>
           Tickets
-          <span class="nav-badge" id="nav-ticket-count">—</span>
+          <span class="nav-pill" id="nav-ticket-count">—</span>
         </div>
         <div class="nav-item" data-page="devices">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14a1 1 0 011 1v9a1 1 0 01-1 1H9v1h1v1H6v-1h1v-1H1a1 1 0 01-1-1V3a1 1 0 011-1zm0 2v7h14V4H1z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 2h14a1 1 0 011 1v9a1 1 0 01-1 1H9v1h1v1H6v-1h1v-1H1a1 1 0 01-1-1V3a1 1 0 011-1zm1 2v6h12V4H2z"/></svg>
           Devices
-          <span class="nav-badge" id="nav-device-count">—</span>
+          <span class="nav-pill" id="nav-device-count">—</span>
         </div>
       </div>
 
       <div class="sidebar-footer">
-        <div class="avatar" id="admin-avatar">A</div>
-        <div class="sidebar-footer-info">
-          <div class="footer-name" id="admin-name">admin</div>
-          <div class="footer-role">Administrator</div>
+        <div class="user-avatar" id="admin-avatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="admin-name">admin</div>
+          <div class="user-role">Administrator</div>
         </div>
         <button class="signout-btn" onclick="logout()" title="Sign out">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 2H2v12h4v1H1V1h5V2zm5.5 3.5l-.7.7L13.1 8H5V9h8.1l-2.3 1.8.7.7L15 8.5l-3.5-3z"/></svg>
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 2H2v12h4v1H1V1h5V2zm5.5 3.5l-.7.7 2.3 2.3H5v1h8.1l-2.3 2.3.7.7L15 9l-3.5-3.5z"/></svg>
         </button>
       </div>
     </nav>
 
-    <!-- Main content -->
+    <!-- Main -->
     <div class="main">
-      <div class="main-inner">
+      <div class="page-wrap">
 
-        <!-- ── Overview ── -->
+        <!-- ── OVERVIEW ── -->
         <div class="page active" id="page-overview">
-          <div class="page-header">
-            <div>
-              <div class="page-title">Overview</div>
-              <div class="page-subtitle">System status at a glance</div>
+          <div class="page-hd">
+            <div class="page-hd-left">
+              <h1>Overview</h1>
+              <p>System health and ticket status at a glance</p>
             </div>
             <button class="btn btn-primary" onclick="openNewTicketModal()">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              <svg viewBox="0 0 12 12"><path stroke="currentColor" stroke-width="1.8" d="M6 1v10M1 6h10"/></svg>
               New Ticket
             </button>
           </div>
 
-          <div class="stats-row">
+          <div class="stat-row">
             <div class="stat-card">
-              <div class="stat-indicator" style="background:var(--accent)"></div>
-              <div class="stat-label">Open Tickets</div>
-              <div class="stat-val" id="stat-open">—</div>
-              <div class="stat-sub">Awaiting action</div>
+              <div class="stat-card-top">
+                <div class="stat-label">Open Tickets</div>
+                <div class="stat-icon" style="background:rgba(78,126,250,0.1)">
+                  <svg viewBox="0 0 14 14" fill="#7aa2ff"><path d="M1 1h12a1 1 0 011 1v10a1 1 0 01-1 1H1a1 1 0 01-1-1V2a1 1 0 011-1zm1 3v6h10V4H2zm1 1h8v1H3V5zm0 2h5v1H3V7z"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="stat-open" style="color:#7aa2ff">—</div>
+              <div class="stat-hint">Awaiting action</div>
             </div>
             <div class="stat-card">
-              <div class="stat-indicator" style="background:var(--amber)"></div>
-              <div class="stat-label">In Progress</div>
-              <div class="stat-val" id="stat-inprog">—</div>
-              <div class="stat-sub">Being worked on</div>
+              <div class="stat-card-top">
+                <div class="stat-label">In Progress</div>
+                <div class="stat-icon" style="background:var(--amber-dim)">
+                  <svg viewBox="0 0 14 14" fill="#e3b341"><circle cx="7" cy="7" r="6" stroke="#e3b341" stroke-width="1.5" fill="none"/><path d="M7 4v3l2 2"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="stat-inprog" style="color:#e3b341">—</div>
+              <div class="stat-hint">Currently being worked on</div>
             </div>
             <div class="stat-card">
-              <div class="stat-indicator" style="background:var(--green)"></div>
-              <div class="stat-label">Devices Online</div>
-              <div class="stat-val" id="stat-online">—</div>
-              <div class="stat-sub">Reporting in last 5m</div>
+              <div class="stat-card-top">
+                <div class="stat-label">Devices Online</div>
+                <div class="stat-icon" style="background:var(--green-dim)">
+                  <svg viewBox="0 0 14 14" fill="#3fb950"><path d="M0 2h14v9H0V2zm1 1v7h12V3H1zm1 1h10v5H2V4zm5 6v2H5v1h4v-1H7v-2z"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="stat-online" style="color:#3fb950">—</div>
+              <div class="stat-hint">Reported in last 5 minutes</div>
             </div>
             <div class="stat-card">
-              <div class="stat-indicator" style="background:var(--border2)"></div>
-              <div class="stat-label">Devices Offline</div>
-              <div class="stat-val" id="stat-offline">—</div>
-              <div class="stat-sub">Not recently seen</div>
+              <div class="stat-card-top">
+                <div class="stat-label">Devices Offline</div>
+                <div class="stat-icon" style="background:rgba(255,255,255,0.04)">
+                  <svg viewBox="0 0 14 14" fill="#4a5568"><path d="M0 2h14v9H0V2zm1 1v7h12V3H1zm1 1h10v5H2V4zm5 6v2H5v1h4v-1H7v-2z" opacity=".5"/><path stroke="#f85149" stroke-width="1.5" d="M4 4l6 6M10 4l-6 6"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="stat-offline" style="color:var(--text-2)">—</div>
+              <div class="stat-hint">Not recently seen</div>
             </div>
           </div>
 
-          <div class="grid-2" style="margin-bottom:16px">
+          <div class="section-label">Recent Activity</div>
+          <div class="overview-grid">
             <div class="card">
-              <div class="card-header">
-                <div style="display:flex;align-items:center">
-                  <span class="card-title">Recent Tickets</span>
-                </div>
-                <span class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="loadTickets()">View all →</span>
+              <div class="card-hd">
+                <span class="card-hd-title">Open Tickets</span>
+                <span class="card-hd-action" onclick="loadTickets()">View all →</span>
               </div>
               <table>
                 <thead><tr><th>Title</th><th>Priority</th><th>Status</th></tr></thead>
@@ -484,9 +628,9 @@
               </table>
             </div>
             <div class="card">
-              <div class="card-header">
-                <span class="card-title">Devices</span>
-                <span class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="loadDevices()">View all →</span>
+              <div class="card-hd">
+                <span class="card-hd-title">Device Health</span>
+                <span class="card-hd-action" onclick="loadDevices()">View all →</span>
               </div>
               <table>
                 <thead><tr><th>Device</th><th>Status</th><th>CPU</th></tr></thead>
@@ -495,28 +639,24 @@
             </div>
           </div>
 
-          <div class="mine-section">
-            <div class="card">
-              <div class="card-header">
-                <span class="card-title">Assigned to Me</span>
-              </div>
-              <table>
-                <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Device</th><th>Updated</th></tr></thead>
-                <tbody id="overview-mine"></tbody>
-              </table>
-            </div>
+          <div class="section-label">Assigned to Me</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Device</th><th>Updated</th></tr></thead>
+              <tbody id="overview-mine"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- ── Tickets list ── -->
+        <!-- ── TICKETS ── -->
         <div class="page" id="page-tickets">
-          <div class="page-header">
-            <div>
-              <div class="page-title">Tickets</div>
-              <div class="page-subtitle" id="tickets-subtitle">All tickets</div>
+          <div class="page-hd">
+            <div class="page-hd-left">
+              <h1>Tickets</h1>
+              <p id="tickets-subtitle">All tickets</p>
             </div>
             <button class="btn btn-primary" onclick="openNewTicketModal()">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              <svg viewBox="0 0 12 12"><path stroke="currentColor" stroke-width="1.8" d="M6 1v10M1 6h10"/></svg>
               New Ticket
             </button>
           </div>
@@ -528,7 +668,7 @@
           </div>
         </div>
 
-        <!-- ── Ticket detail ── -->
+        <!-- ── TICKET DETAIL ── -->
         <div class="page" id="page-ticket-detail">
           <div class="back-link" onclick="showPage('tickets'); loadTickets()">
             <svg viewBox="0 0 14 14" fill="currentColor"><path d="M8 1L2 7l6 6M2 7h10"/></svg>
@@ -537,15 +677,15 @@
           <div id="ticket-detail-content"></div>
         </div>
 
-        <!-- ── Devices list ── -->
+        <!-- ── DEVICES ── -->
         <div class="page" id="page-devices">
-          <div class="page-header">
-            <div>
-              <div class="page-title">Devices</div>
-              <div class="page-subtitle">Registered endpoints and their health</div>
+          <div class="page-hd">
+            <div class="page-hd-left">
+              <h1>Devices</h1>
+              <p>Registered endpoints and their health metrics</p>
             </div>
             <button class="btn btn-primary" onclick="openAddDeviceModal()">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 1v10M1 6h10"/></svg>
+              <svg viewBox="0 0 12 12"><path stroke="currentColor" stroke-width="1.8" d="M6 1v10M1 6h10"/></svg>
               Add Device
             </button>
           </div>
@@ -557,7 +697,7 @@
           </div>
         </div>
 
-        <!-- ── Device detail ── -->
+        <!-- ── DEVICE DETAIL ── -->
         <div class="page" id="page-device-detail">
           <div class="back-link" onclick="showPage('devices'); loadDevices()">
             <svg viewBox="0 0 14 14" fill="currentColor"><path d="M8 1L2 7l6 6M2 7h10"/></svg>
@@ -571,19 +711,16 @@
   </div>
 </div>
 
-<!-- ───── New Ticket Modal ───── -->
+<!-- ══════════ NEW TICKET MODAL ══════════ -->
 <div class="modal-overlay" id="modal-new-ticket">
   <div class="modal">
-    <div class="modal-head">
-      <h3>Create Ticket</h3>
-      <button class="modal-close" onclick="closeModal('modal-new-ticket')">
-        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 4l8 8M12 4l-8 8"/><path stroke="currentColor" stroke-width="1.5" d="M4 4l8 8M12 4l-8 8"/></svg>
-        ✕
-      </button>
+    <div class="modal-hd">
+      <h3>Create New Ticket</h3>
+      <button class="modal-x" onclick="closeModal('modal-new-ticket')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field"><label>Title</label><input id="nt-title" placeholder="Brief description of the issue" /></div>
-      <div class="field"><label>Description</label><textarea id="nt-desc" placeholder="Full details, steps to reproduce, environment..."></textarea></div>
+      <div class="field"><label>Title</label><input id="nt-title" placeholder="Short description of the issue" /></div>
+      <div class="field"><label>Description</label><textarea id="nt-desc" placeholder="Describe the issue in detail — steps to reproduce, environment, error messages..."></textarea></div>
       <div class="two-col">
         <div class="field"><label>Priority</label>
           <select id="nt-priority">
@@ -594,35 +731,43 @@
           </select>
         </div>
         <div class="field"><label>Device (optional)</label>
-          <select id="nt-device"><option value="">— None —</option></select>
+          <select id="nt-device"><option value="">— No device —</option></select>
         </div>
       </div>
-      <div class="field"><label>Assigned To (optional)</label><input id="nt-assigned" placeholder="Username or name" /></div>
+      <div class="field"><label>Assign To (optional)</label><input id="nt-assigned" placeholder="Enter a username" /></div>
     </div>
-    <div class="modal-foot">
+    <div class="modal-ft">
       <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
       <button class="btn btn-primary" onclick="createTicket()">Create Ticket</button>
     </div>
   </div>
 </div>
 
-<!-- ───── Add Device Modal ───── -->
+<!-- ══════════ ADD DEVICE MODAL ══════════ -->
 <div class="modal-overlay" id="modal-add-device">
   <div class="modal">
-    <div class="modal-head">
-      <h3>Add Device</h3>
-      <button class="modal-close" onclick="closeModal('modal-add-device'); loadDevices()">✕</button>
+    <div class="modal-hd">
+      <h3>Add New Device</h3>
+      <button class="modal-x" onclick="closeModal('modal-add-device'); loadDevices()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="info-banner">A unique agent token will be generated. Run the agent script on the device with this token to start reporting health data.</div>
-      <div class="field"><label>Device Name</label><input id="ad-name" placeholder="e.g. dev-server-01" /></div>
+      <div class="info-note">
+        A unique agent token will be generated for this device. Install and run <code style="font-family:monospace;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px">agent.js</code> on that machine using the token to begin reporting health data.
+      </div>
+      <div class="field"><label>Device Name</label><input id="ad-name" placeholder="e.g. dev-vm-01" /></div>
       <div id="ad-result" style="display:none">
-        <div class="field"><label>Agent Token — save this, shown once</label><div class="token-box" id="ad-token"></div></div>
-        <div class="field"><label>Run on the device</label><div class="token-box" id="ad-install"></div></div>
+        <div class="field">
+          <label>Agent Token — copy and save this now</label>
+          <div class="token-box" id="ad-token"></div>
+        </div>
+        <div class="field">
+          <label>Run on the device (Node.js 18+)</label>
+          <div class="token-box" id="ad-install"></div>
+        </div>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" onclick="closeModal('modal-add-device'); loadDevices()">Close</button>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-device'); loadDevices()">Done</button>
       <button class="btn btn-primary" id="ad-btn" onclick="addDevice()">Generate Token</button>
     </div>
   </div>
@@ -674,6 +819,9 @@ document.getElementById('auth-btn').onclick = async () => {
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('auth-err');
   errEl.style.display = 'none';
+  const btn = document.getElementById('auth-btn');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
   try {
     let data;
     if (isSetup) {
@@ -688,10 +836,11 @@ document.getElementById('auth-btn').onclick = async () => {
   } catch (e) {
     errEl.textContent = e.message;
     errEl.style.display = 'block';
+    btn.textContent = isSetup ? 'Create Account' : 'Sign In';
+    btn.disabled = false;
   }
 };
 
-// Enter key submits auth
 document.getElementById('login-password').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('auth-btn').click();
 });
@@ -734,54 +883,51 @@ async function loadOverview() {
   try {
     const [tickets, devices] = await Promise.all([api('/api/tickets'), api('/api/devices')]);
     const fiveMin = 5 * 60 * 1000;
+    const now = Date.now();
 
-    const open = tickets.filter(t => t.status === 'open').length;
-    const inprog = tickets.filter(t => t.status === 'in_progress').length;
-    const onlineDevices = devices.filter(d => new Date(d.lastSeen) > new Date(Date.now() - fiveMin));
+    const open    = tickets.filter(t => t.status === 'open').length;
+    const inprog  = tickets.filter(t => t.status === 'in_progress').length;
+    const onlineCt = devices.filter(d => new Date(d.lastSeen) > new Date(now - fiveMin)).length;
 
-    document.getElementById('stat-open').textContent = open;
-    document.getElementById('stat-inprog').textContent = inprog;
-    document.getElementById('stat-online').textContent = onlineDevices.length;
-    document.getElementById('stat-offline').textContent = devices.length - onlineDevices.length;
-
-    // Nav badges
+    document.getElementById('stat-open').textContent    = open;
+    document.getElementById('stat-inprog').textContent  = inprog;
+    document.getElementById('stat-online').textContent  = onlineCt;
+    document.getElementById('stat-offline').textContent = devices.length - onlineCt;
     document.getElementById('nav-ticket-count').textContent = open + inprog || '0';
     document.getElementById('nav-device-count').textContent = devices.length || '0';
 
-    // Recent tickets (top 6)
     const tbody = document.getElementById('overview-tickets');
-    const recent = tickets.filter(t => t.status !== 'closed').slice(0, 6);
-    tbody.innerHTML = recent.length ? recent.map(t => `
+    const active = tickets.filter(t => t.status !== 'closed').slice(0, 6);
+    tbody.innerHTML = active.length ? active.map(t => `
       <tr onclick="openTicket('${t.id}')">
         <td class="td-primary">${esc(t.title)}</td>
-        <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-        <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="3" class="empty"><div class="empty-icon">✓</div>No open tickets</td></tr>`;
+        <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
+        <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
+      </tr>`) .join('')
+      : `<tr class="empty-row"><td colspan="3"><div class="empty-icon">✓</div>All caught up</td></tr>`;
 
-    // Devices
     const dbody = document.getElementById('overview-devices');
     dbody.innerHTML = devices.length ? devices.map(d => {
-      const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
-      const snap = d.snapshots && d.snapshots[0];
-      const cpu = snap && snap.cpuPercent != null ? snap.cpuPercent.toFixed(0) + '%' : '—';
+      const online = new Date(d.lastSeen) > new Date(now - fiveMin);
+      const snap   = d.snapshots && d.snapshots[0];
+      const cpu    = snap && snap.cpuPercent != null ? snap.cpuPercent.toFixed(0) + '%' : '—';
       return `<tr onclick="openDevice('${d.id}')">
         <td class="td-primary">${esc(d.name)}</td>
-        <td><div class="status-cell"><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span><span class="td-muted">${isOnline ? 'Online' : 'Offline'}</span></div></td>
-        <td class="td-muted">${cpu}</td>
+        <td><div class="status-cell"><span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span><span class="td-secondary">${online ? 'Online' : 'Offline'}</span></div></td>
+        <td class="td-secondary">${cpu}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="3" class="empty">No devices registered</td></tr>`;
+    }).join('') : `<tr class="empty-row"><td colspan="3">No devices registered yet</td></tr>`;
 
-    // Assigned to me
     const mine = tickets.filter(t => t.assignedTo === currentAdmin.username && t.status !== 'closed');
-    const mineTbody = document.getElementById('overview-mine');
-    mineTbody.innerHTML = mine.length ? mine.map(t => `
+    const mtbody = document.getElementById('overview-mine');
+    mtbody.innerHTML = mine.length ? mine.map(t => `
       <tr onclick="openTicket('${t.id}')">
         <td class="td-primary">${esc(t.title)}</td>
-        <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-        <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-        <td class="td-muted">${t.device ? esc(t.device.name) : '—'}</td>
+        <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
+        <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
+        <td class="td-secondary">${t.device ? esc(t.device.name) : '<span class="td-dim">—</span>'}</td>
         <td class="td-dim">${timeAgo(t.updatedAt)}</td>
-      </tr>`).join('') : `<tr><td colspan="5" class="empty">No tickets assigned to you</td></tr>`;
+      </tr>`).join('') : `<tr class="empty-row"><td colspan="5">No tickets assigned to you</td></tr>`;
 
   } catch (e) { console.error(e); }
 }
@@ -791,17 +937,17 @@ async function loadTickets() {
   showPage('tickets');
   try {
     const tickets = await api('/api/tickets');
-    document.getElementById('tickets-subtitle').textContent = `${tickets.length} ticket${tickets.length !== 1 ? 's' : ''}`;
+    document.getElementById('tickets-subtitle').textContent = `${tickets.length} ticket${tickets.length !== 1 ? 's' : ''} total`;
     const tbody = document.getElementById('tickets-tbody');
     tbody.innerHTML = tickets.length ? tickets.map(t => `
       <tr onclick="openTicket('${t.id}')">
         <td class="td-primary">${esc(t.title)}</td>
-        <td class="td-muted">${t.device ? esc(t.device.name) : '<span class="td-dim">—</span>'}</td>
-        <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-        <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-        <td class="td-muted">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">Unassigned</span>'}</td>
+        <td class="td-secondary">${t.device ? esc(t.device.name) : '<span class="td-dim">—</span>'}</td>
+        <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
+        <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
+        <td class="td-secondary">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">Unassigned</span>'}</td>
         <td class="td-dim">${timeAgo(t.createdAt)}</td>
-      </tr>`).join('') : `<tr><td colspan="6" class="empty">No tickets yet — create one to get started</td></tr>`;
+      </tr>`).join('') : `<tr class="empty-row"><td colspan="6">No tickets yet — create one to get started</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -812,31 +958,34 @@ async function openTicket(id) {
     const t = await api('/api/tickets?id=' + id);
     const el = document.getElementById('ticket-detail-content');
     el.innerHTML = `
-      <div class="ticket-header">
+      <div class="ticket-hd">
         <div class="ticket-title-row">
           <div class="ticket-title">${esc(t.title)}</div>
-          <span class="badge badge-${t.priority}">${t.priority}</span>
-          <span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span>
+          <span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span>
+          <span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span>
         </div>
-        <div class="ticket-meta-row">
+        <div class="ticket-meta">
           <span>Created ${timeAgo(t.createdAt)}</span>
           ${t.device ? `<span>· Device: <strong>${esc(t.device.name)}</strong></span>` : ''}
-          ${t.assignedTo ? `<span>· Assigned to <strong>${esc(t.assignedTo)}</strong></span>` : '<span>· Unassigned</span>'}
+          ${t.assignedTo ? `<span>· Assigned to <strong>${esc(t.assignedTo)}</strong></span>` : `<span style="color:var(--text-3)">· Unassigned</span>`}
         </div>
       </div>
 
       <div class="ticket-desc">${esc(t.description)}</div>
 
-      <div class="status-bar">
+      <div class="action-row">
+        <span class="action-row-label">Status</span>
         ${['open','in_progress','resolved','closed'].map(s =>
-          `<button class="status-btn ${t.status===s ? 'active-'+s : ''}" onclick="updateTicketStatus('${t.id}','${s}')">${s.replace('_',' ')}</button>`
+          `<button class="status-pill ${t.status===s ? 'pill-'+s : ''}" onclick="updateTicketStatus('${t.id}','${s}')">${s.replace('_',' ')}</button>`
         ).join('')}
-        <select class="priority-select" onchange="updateTicketPriority('${t.id}',this.value)">
+        <div class="divider"></div>
+        <span class="action-row-label">Priority</span>
+        <select class="priority-sel" onchange="updateTicketPriority('${t.id}',this.value)">
           ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p}</option>`).join('')}
         </select>
       </div>
 
-      <div class="section-hd">Activity · ${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</div>
+      <div class="activity-hd">Activity · ${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</div>
       <div class="comments" id="comment-list-${t.id}">
         ${t.comments.map(c => `
           <div class="comment">
@@ -845,12 +994,10 @@ async function openTicket(id) {
               <span class="comment-time">${timeAgo(c.createdAt)}</span>
             </div>
             <div class="comment-body">${esc(c.content)}</div>
-          </div>`).join('') || `<div style="color:var(--text-3);font-size:13px;padding:4px 0">No comments yet.</div>`}
+          </div>`).join('') || `<div style="color:var(--text-3);font-size:13px;padding:4px 0 12px">No comments yet. Be the first to add one.</div>`}
       </div>
-      <div class="comment-input-row">
-        <div class="field" style="flex:1;margin:0">
-          <textarea id="new-comment-${t.id}" placeholder="Add a comment..." style="margin:0"></textarea>
-        </div>
+      <div class="new-comment-row">
+        <div class="field"><textarea id="new-comment-${t.id}" placeholder="Leave a comment..."></textarea></div>
         <button class="btn btn-primary" onclick="addComment('${t.id}')">Post</button>
       </div>`;
   } catch (e) { console.error(e); }
@@ -888,17 +1035,17 @@ async function loadDevices() {
     const fiveMin = 5 * 60 * 1000;
     const tbody = document.getElementById('devices-tbody');
     tbody.innerHTML = devices.length ? devices.map(d => {
-      const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
+      const online = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
       return `<tr onclick="openDevice('${d.id}')">
         <td class="td-primary">${esc(d.name)}</td>
-        <td class="td-muted">${esc(d.hostname)}</td>
-        <td class="td-muted">${d.os ? esc(d.os) : '<span class="td-dim">—</span>'}</td>
-        <td class="td-muted">${d.ipAddress ? esc(d.ipAddress) : '<span class="td-dim">—</span>'}</td>
-        <td><div class="status-cell"><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span><span class="td-muted">${isOnline ? 'Online' : 'Offline'}</span></div></td>
+        <td class="td-secondary">${esc(d.hostname)}</td>
+        <td class="td-secondary">${d.os ? esc(d.os) : '<span class="td-dim">—</span>'}</td>
+        <td class="td-secondary">${d.ipAddress ? esc(d.ipAddress) : '<span class="td-dim">—</span>'}</td>
+        <td><div class="status-cell"><span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span><span class="td-secondary">${online ? 'Online' : 'Offline'}</span></div></td>
         <td class="td-dim">${timeAgo(d.lastSeen)}</td>
-        <td class="td-muted">${d._count ? d._count.tickets : 0}</td>
+        <td class="td-secondary">${d._count ? d._count.tickets : 0}</td>
       </tr>`;
-    }).join('') : `<tr><td colspan="7" class="empty">No devices registered yet. Click "Add Device" to get started.</td></tr>`;
+    }).join('') : `<tr class="empty-row"><td colspan="7">No devices registered yet — click "Add Device" to get started</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -908,56 +1055,52 @@ async function openDevice(id) {
   try {
     const d = await api('/api/devices?id=' + id);
     const fiveMin = 5 * 60 * 1000;
-    const isOnline = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
-    const snap = d.snapshots && d.snapshots[0];
-
+    const online = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
+    const snap   = d.snapshots && d.snapshots[0];
     const cpuPct  = snap && snap.cpuPercent  != null ? snap.cpuPercent  : null;
-    const ramPct  = snap && snap.ramTotalGb  ? (snap.ramUsedGb  / snap.ramTotalGb  * 100) : null;
-    const diskPct = snap && snap.diskTotalGb ? (snap.diskUsedGb / snap.diskTotalGb * 100) : null;
-
-    function pctClass(v) { return v > 85 ? 'pbar-red' : v > 60 ? 'pbar-amber' : 'pbar-green'; }
-    function metricBar(v) {
-      if (v == null) return '';
-      return `<div class="metric-bar"><div class="metric-bar-fill ${pctClass(v)}" style="width:${Math.min(100,v).toFixed(0)}%"></div></div>`;
-    }
+    const ramPct  = snap && snap.ramTotalGb  ? snap.ramUsedGb  / snap.ramTotalGb  * 100 : null;
+    const diskPct = snap && snap.diskTotalGb ? snap.diskUsedGb / snap.diskTotalGb * 100 : null;
+    function pclass(v) { return v > 85 ? 'pbar-red' : v > 60 ? 'pbar-amber' : 'pbar-green'; }
+    function bar(v) { return v == null ? '' : `<div class="pbar"><div class="pbar-fill ${pclass(v)}" style="width:${Math.min(100,v).toFixed(1)}%"></div></div>`; }
 
     document.getElementById('device-detail-content').innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-        <div style="font-size:20px;font-weight:600;letter-spacing:-0.02em">${esc(d.name)}</div>
+        <h1 style="font-size:22px;font-weight:700;letter-spacing:-0.03em">${esc(d.name)}</h1>
         <div class="status-cell">
-          <span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>
-          <span class="td-muted" style="font-size:13px">${isOnline ? 'Online' : 'Offline'}</span>
+          <span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span>
+          <span class="td-secondary">${online ? 'Online' : 'Offline'}</span>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:24px">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:28px">
         ${esc(d.hostname)} &nbsp;·&nbsp; ${d.os || 'Unknown OS'} &nbsp;·&nbsp; ${d.ipAddress || 'Unknown IP'} &nbsp;·&nbsp; Last seen ${timeAgo(d.lastSeen)}
       </div>
 
+      <div class="section-label" style="margin-bottom:14px">Health Metrics</div>
       <div class="metric-grid">
         <div class="metric-card">
           <div class="metric-lbl">CPU Usage</div>
           <div class="metric-val">${cpuPct != null ? cpuPct.toFixed(1) + '%' : '—'}</div>
-          ${metricBar(cpuPct)}
+          ${bar(cpuPct)}
         </div>
         <div class="metric-card">
-          <div class="metric-lbl">Memory</div>
+          <div class="metric-lbl">Memory Used</div>
           <div class="metric-val">${snap && snap.ramUsedGb != null ? snap.ramUsedGb.toFixed(1) + ' GB' : '—'}</div>
-          <div class="metric-sub">${snap && snap.ramTotalGb != null ? 'of ' + snap.ramTotalGb.toFixed(1) + ' GB total' : ''}</div>
-          ${metricBar(ramPct)}
+          <div class="metric-sub">${snap && snap.ramTotalGb != null ? 'of ' + snap.ramTotalGb.toFixed(1) + ' GB' : ''}</div>
+          ${bar(ramPct)}
         </div>
         <div class="metric-card">
-          <div class="metric-lbl">Disk</div>
+          <div class="metric-lbl">Disk Used</div>
           <div class="metric-val">${snap && snap.diskUsedGb != null ? snap.diskUsedGb.toFixed(1) + ' GB' : '—'}</div>
-          <div class="metric-sub">${snap && snap.diskTotalGb != null ? 'of ' + snap.diskTotalGb.toFixed(1) + ' GB total' : ''}</div>
-          ${metricBar(diskPct)}
+          <div class="metric-sub">${snap && snap.diskTotalGb != null ? 'of ' + snap.diskTotalGb.toFixed(1) + ' GB' : ''}</div>
+          ${bar(diskPct)}
         </div>
         <div class="metric-card">
           <div class="metric-lbl">Uptime</div>
-          <div class="metric-val" style="font-size:18px">${snap && snap.uptimeSeconds != null ? formatUptime(snap.uptimeSeconds) : '—'}</div>
+          <div class="metric-val" style="font-size:20px">${snap && snap.uptimeSeconds != null ? formatUptime(snap.uptimeSeconds) : '—'}</div>
         </div>
       </div>
 
-      <div class="section-hd" style="margin-bottom:12px">Open Tickets</div>
+      <div class="section-label" style="margin-bottom:14px">Open Tickets</div>
       <div class="card">
         <table>
           <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Assigned</th></tr></thead>
@@ -965,10 +1108,10 @@ async function openDevice(id) {
             ${d.tickets.filter(t => t.status !== 'closed').map(t => `
               <tr onclick="openTicket('${t.id}')">
                 <td class="td-primary">${esc(t.title)}</td>
-                <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-                <td><span class="badge badge-${t.status}">${t.status.replace('_',' ')}</span></td>
-                <td class="td-muted">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">—</span>'}</td>
-              </tr>`).join('') || '<tr><td colspan="4" class="empty">No open tickets for this device</td></tr>'}
+                <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
+                <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
+                <td class="td-secondary">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">—</span>'}</td>
+              </tr>`).join('') || '<tr class="empty-row"><td colspan="4">No open tickets for this device</td></tr>'}
           </tbody>
         </table>
       </div>`;
@@ -982,17 +1125,17 @@ function openNewTicketModal() {
   document.getElementById('nt-assigned').value = '';
   api('/api/devices').then(devices => {
     const sel = document.getElementById('nt-device');
-    sel.innerHTML = '<option value="">— None —</option>' +
+    sel.innerHTML = '<option value="">— No device —</option>' +
       devices.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('');
   }).catch(() => {});
   document.getElementById('modal-new-ticket').classList.add('open');
 }
 
 async function createTicket() {
-  const title = document.getElementById('nt-title').value.trim();
-  const description = document.getElementById('nt-desc').value.trim();
-  const priority = document.getElementById('nt-priority').value;
-  const deviceId = document.getElementById('nt-device').value;
+  const title      = document.getElementById('nt-title').value.trim();
+  const description= document.getElementById('nt-desc').value.trim();
+  const priority   = document.getElementById('nt-priority').value;
+  const deviceId   = document.getElementById('nt-device').value;
   const assignedTo = document.getElementById('nt-assigned').value.trim();
   if (!title || !description) return alert('Title and description are required');
   try {
@@ -1035,25 +1178,17 @@ function esc(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function timeAgo(iso) {
   const diff = Date.now() - new Date(iso);
   const s = Math.floor(diff / 1000);
   if (s < 60) return s + 's ago';
-  const m = Math.floor(s / 60);
-  if (m < 60) return m + 'm ago';
-  const h = Math.floor(m / 60);
-  if (h < 24) return h + 'h ago';
+  const m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
   return Math.floor(h / 24) + 'd ago';
 }
-
-function formatUptime(seconds) {
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return d + 'd ' + h + 'h';
-  if (h > 0) return h + 'h ' + m + 'm';
-  return m + 'm';
+function formatUptime(sec) {
+  const d = Math.floor(sec/86400), h = Math.floor((sec%86400)/3600), m = Math.floor((sec%3600)/60);
+  if (d > 0) return d+'d '+h+'h'; if (h > 0) return h+'h '+m+'m'; return m+'m';
 }
 
 initAuth();
