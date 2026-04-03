@@ -547,6 +547,11 @@
           Devices
           <span class="nav-pill" id="nav-device-count">—</span>
         </div>
+        <div class="nav-item" data-page="history">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zM7 4v4.5l3.5 2-.7 1.2L6 9.5V4h1z"/></svg>
+          History
+          <span class="nav-pill" id="nav-history-count">—</span>
+        </div>
       </div>
 
       <div class="sidebar-footer">
@@ -712,6 +717,67 @@
           <div id="device-detail-content"></div>
         </div>
 
+        <!-- ── HISTORY ── -->
+        <div class="page" id="page-history">
+          <div class="page-hd">
+            <div class="page-hd-left">
+              <h1>Ticket History</h1>
+              <p>Resolved and closed tickets</p>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px">
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-label">Resolved</div>
+                <div class="stat-icon" style="background:var(--green-dim)">
+                  <svg viewBox="0 0 14 14" fill="#3fb950"><path d="M2 7l3.5 3.5L12 4"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="hist-resolved" style="color:#3fb950">—</div>
+              <div class="stat-hint">Successfully resolved</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-label">Closed</div>
+                <div class="stat-icon" style="background:rgba(255,255,255,0.04)">
+                  <svg viewBox="0 0 14 14" fill="#4a5568"><path d="M3 3l8 8M11 3l-8 8"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="hist-closed" style="color:var(--text-2)">—</div>
+              <div class="stat-hint">Closed without resolution</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-label">Total</div>
+                <div class="stat-icon" style="background:var(--accent-dim)">
+                  <svg viewBox="0 0 14 14" fill="var(--accent)"><path d="M1 1h12a1 1 0 011 1v10a1 1 0 01-1 1H1a1 1 0 01-1-1V2a1 1 0 011-1zm1 3v6h10V4H2zm1 1h8v1H3V5zm0 2h5v1H3V7z"/></svg>
+                </div>
+              </div>
+              <div class="stat-val" id="hist-total" style="color:var(--accent)">—</div>
+              <div class="stat-hint">All completed tickets</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd">
+              <span class="card-hd-title">Completed Tickets</span>
+              <div style="display:flex;gap:8px;align-items:center">
+                <label style="font-size:12px;color:var(--text-2)">Filter:</label>
+                <select id="history-filter" onchange="applyHistoryFilter()" style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 28px 5px 10px;font-size:12px;font-family:inherit;cursor:pointer;outline:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%238b949e' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center">
+                  <option value="all">All</option>
+                  <option value="resolved">Resolved only</option>
+                  <option value="closed">Closed only</option>
+                </select>
+              </div>
+            </div>
+            <table>
+              <thead><tr><th>Title</th><th>Reported By</th><th>Assigned To</th><th>Device</th><th>Priority</th><th>Status</th><th>Closed</th></tr></thead>
+              <tbody id="history-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -736,24 +802,16 @@
             <option value="critical">Critical</option>
           </select>
         </div>
-        <div class="field"><label>Status</label>
-          <select id="nt-status">
-            <option value="open" selected>Open</option>
-            <option value="in_progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
-      </div>
-      <div class="two-col">
         <div class="field"><label>Device (optional)</label>
           <select id="nt-device"><option value="">— No device —</option></select>
         </div>
+      </div>
+      <div class="two-col">
         <div class="field"><label>Assign To (optional)</label>
           <select id="nt-assigned"><option value="">— Unassigned —</option></select>
         </div>
+        <div class="field"><label>Reported By</label><input id="nt-reporter" placeholder="Name of person who reported this" /></div>
       </div>
-      <div class="field"><label>Reported By</label><input id="nt-reporter" placeholder="Name of person who reported this" /></div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
@@ -894,6 +952,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(el => {
     if (page === 'overview') loadOverview();
     if (page === 'tickets') loadTickets();
     if (page === 'devices') loadDevices();
+    if (page === 'history') loadHistory();
   });
 });
 
@@ -912,8 +971,10 @@ async function loadOverview() {
     document.getElementById('stat-inprog').textContent  = inprog;
     document.getElementById('stat-online').textContent  = onlineCt;
     document.getElementById('stat-offline').textContent = devices.length - onlineCt;
+    const historyCt = tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
     document.getElementById('nav-ticket-count').textContent = open + inprog || '0';
     document.getElementById('nav-device-count').textContent = devices.length || '0';
+    document.getElementById('nav-history-count').textContent = historyCt || '0';
 
     const tbody = document.getElementById('overview-tickets');
     const active = tickets.filter(t => t.status !== 'closed').slice(0, 6);
@@ -1195,7 +1256,6 @@ function openNewTicketModal() {
   document.getElementById('nt-title').value = '';
   document.getElementById('nt-desc').value = '';
   document.getElementById('nt-reporter').value = currentAdmin.username;
-  document.getElementById('nt-status').value = 'open';
 
   Promise.all([api('/api/devices'), api('/api/users')]).then(([devices, users]) => {
     document.getElementById('nt-device').innerHTML =
@@ -1214,12 +1274,11 @@ async function createTicket() {
   const title      = document.getElementById('nt-title').value.trim();
   const description= document.getElementById('nt-desc').value.trim();
   const priority   = document.getElementById('nt-priority').value;
-  const status     = document.getElementById('nt-status').value;
   const deviceId   = document.getElementById('nt-device').value;
   const assignedTo = document.getElementById('nt-assigned').value;
   if (!title || !description) return alert('Title and description are required');
   try {
-    await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, status, deviceId: deviceId || null, assignedTo: assignedTo || null }) });
+    await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, deviceId: deviceId || null, assignedTo: assignedTo || null }) });
     closeModal('modal-new-ticket');
     loadTickets();
   } catch (e) { alert(e.message); }
@@ -1252,6 +1311,46 @@ function closeModal(id) {
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
+
+// ── History ──
+let _historyTickets = [];
+
+async function loadHistory() {
+  showPage('history');
+  try {
+    const tickets = await api('/api/tickets');
+    _historyTickets = tickets.filter(t => t.status === 'resolved' || t.status === 'closed');
+
+    const resolved = _historyTickets.filter(t => t.status === 'resolved').length;
+    const closed   = _historyTickets.filter(t => t.status === 'closed').length;
+    document.getElementById('hist-resolved').textContent = resolved;
+    document.getElementById('hist-closed').textContent   = closed;
+    document.getElementById('hist-total').textContent    = _historyTickets.length;
+
+    renderHistoryTable(_historyTickets);
+  } catch (e) { console.error(e); }
+}
+
+function applyHistoryFilter() {
+  const val = document.getElementById('history-filter').value;
+  const filtered = val === 'all' ? _historyTickets : _historyTickets.filter(t => t.status === val);
+  renderHistoryTable(filtered);
+}
+
+function renderHistoryTable(tickets) {
+  const tbody = document.getElementById('history-tbody');
+  tbody.innerHTML = tickets.length ? tickets.map(t => `
+    <tr onclick="openTicket('${t.id}')">
+      <td class="td-primary">${esc(t.title)}</td>
+      <td class="td-secondary">${t.createdBy ? esc(t.createdBy) : '<span class="td-dim">—</span>'}</td>
+      <td class="td-secondary">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">—</span>'}</td>
+      <td class="td-secondary">${t.device ? esc(t.device.name) : '<span class="td-dim">—</span>'}</td>
+      <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
+      <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
+      <td class="td-dim">${timeAgo(t.updatedAt)}</td>
+    </tr>`).join('')
+    : `<tr class="empty-row"><td colspan="7">No completed tickets yet</td></tr>`;
+}
 
 // ── Helpers ──
 function esc(s) {
