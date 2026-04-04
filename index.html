@@ -541,6 +541,61 @@
     .compose-hint { font-size: 12px; color: var(--text-3); margin-bottom: 10px; line-height: 1.5; }
     .compose-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
 
+    /* ── CREATE TICKET MODAL ── */
+    .modal-wide { width: 640px; }
+    .ticket-form-section { margin-bottom: 22px; }
+    .ticket-form-section-hd {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-2); margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ticket-form-section-hd-icon {
+      width: 24px; height: 24px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ticket-form-section-hd-icon svg { width: 13px; height: 13px; }
+
+    /* Priority cards */
+    .priority-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .priority-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 12px 8px; border-radius: 10px; border: 2px solid var(--border);
+      cursor: pointer; transition: all 0.15s; background: var(--card); text-align: center;
+      user-select: none;
+    }
+    .priority-card:hover { border-color: var(--border-hi); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.07); }
+    .priority-card-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .priority-card-icon svg { width: 18px; height: 18px; }
+    .priority-card-name { font-size: 13px; font-weight: 700; }
+    .priority-card-desc { font-size: 11px; color: var(--text-3); line-height: 1.3; }
+    .priority-card.sel-low      { border-color: #16a34a; background: #f0fdf4; }
+    .priority-card.sel-low      .priority-card-name { color: #15803d; }
+    .priority-card.sel-medium   { border-color: #f59e0b; background: #fffbeb; }
+    .priority-card.sel-medium   .priority-card-name { color: #92400e; }
+    .priority-card.sel-high     { border-color: #f97316; background: #fff7ed; }
+    .priority-card.sel-high     .priority-card-name { color: #c2410c; }
+    .priority-card.sel-critical { border-color: #dc2626; background: #fef2f2; }
+    .priority-card.sel-critical .priority-card-name { color: #991b1b; }
+
+    /* Category chips */
+    .category-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .category-chip {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 14px; border-radius: 9px; border: 2px solid var(--border);
+      cursor: pointer; transition: all 0.15s; background: var(--card); font-size: 13px;
+      font-weight: 600; color: var(--text-2); user-select: none;
+    }
+    .category-chip:hover { border-color: var(--border-hi); background: var(--bg); color: var(--text); }
+    .category-chip-icon { font-size: 18px; line-height: 1; }
+    .category-chip.selected { border-color: var(--accent); background: var(--accent-lt); color: var(--accent); }
+
+    /* Char counter */
+    .field-footer { display: flex; justify-content: flex-end; margin-top: 4px; }
+    .char-count { font-size: 11px; color: var(--text-3); }
+    .char-count.warn { color: var(--amber); }
+    .char-count.over { color: var(--red); }
+
     /* ── MODALS ── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 200;
@@ -928,34 +983,130 @@
 
 <!-- NEW TICKET MODAL -->
 <div class="modal-overlay" id="modal-new-ticket">
-  <div class="modal">
-    <div class="modal-hd"><h3>Create New Ticket</h3><button class="modal-x" onclick="closeModal('modal-new-ticket')">✕</button></div>
-    <div class="modal-body">
-      <div class="field"><label>Title</label><input id="nt-title" placeholder="Short description of the issue" /></div>
-      <div class="field"><label>Description</label><textarea id="nt-desc" placeholder="Describe the issue in detail…"></textarea></div>
-      <div class="two-col">
-        <div class="field"><label>Priority</label>
-          <select id="nt-priority">
-            <option value="low">Low</option><option value="medium" selected>Medium</option>
-            <option value="high">High</option><option value="critical">Critical</option>
-          </select>
+  <div class="modal modal-wide">
+    <div class="modal-hd" style="background:linear-gradient(135deg,#1a2035,#1e3a5f);border-radius:14px 14px 0 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M8 5v6M5 8h6"/></svg>
         </div>
-        <div class="field"><label>Device (optional)</label>
+        <div>
+          <h3 style="color:#fff;font-size:15px">Create New Ticket</h3>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px">Fill in the details to open a support ticket</div>
+        </div>
+      </div>
+      <button class="modal-x" style="color:rgba(255,255,255,0.5)" onclick="closeModal('modal-new-ticket')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:24px">
+
+      <!-- Section 1: Issue Details -->
+      <div class="ticket-form-section">
+        <div class="ticket-form-section-hd">
+          <div class="ticket-form-section-hd-icon" style="background:#eff6ff">
+            <svg viewBox="0 0 13 13" fill="none" stroke="#2563eb" stroke-width="1.6"><rect x="1" y="1" width="11" height="11" rx="2"/><path d="M4 5h5M4 8h3"/></svg>
+          </div>
+          Issue Details
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Issue Title <span style="color:var(--red)">*</span></label>
+          <input id="nt-title" placeholder="e.g. Laptop won't connect to VPN" oninput="ntTitleCount(this)" autocomplete="off" />
+        </div>
+        <div class="field" style="margin-bottom:4px">
+          <label>Description <span style="color:var(--red)">*</span></label>
+          <textarea id="nt-desc" placeholder="Describe what's happening, steps to reproduce, and any error messages…" style="min-height:100px" oninput="ntDescCount(this)"></textarea>
+        </div>
+        <div class="field-footer"><span class="char-count" id="nt-desc-count">0 / 1000</span></div>
+      </div>
+
+      <!-- Section 2: Priority & Category -->
+      <div class="ticket-form-section">
+        <div class="ticket-form-section-hd">
+          <div class="ticket-form-section-hd-icon" style="background:#fffbeb">
+            <svg viewBox="0 0 13 13" fill="none" stroke="#f59e0b" stroke-width="1.6"><path d="M6.5 1l1.3 3.9H12L8.7 7.5l1.3 3.9L6.5 9 3.1 11.4 4.4 7.5 1 5h4.2z"/></svg>
+          </div>
+          Priority & Category
+        </div>
+        <div style="margin-bottom:14px">
+          <div class="action-field-lbl" style="margin-bottom:10px">Priority Level</div>
+          <div class="priority-grid">
+            <div class="priority-card" id="pc-low" onclick="selectPriority('low')">
+              <div class="priority-card-icon" style="background:#f0fdf4">
+                <svg viewBox="0 0 18 18" fill="none" stroke="#16a34a" stroke-width="1.8"><path d="M9 3v12M5 11l4 4 4-4"/></svg>
+              </div>
+              <div class="priority-card-name" style="color:var(--text-2)">Low</div>
+              <div class="priority-card-desc">Can wait, no urgency</div>
+            </div>
+            <div class="priority-card sel-medium" id="pc-medium" onclick="selectPriority('medium')">
+              <div class="priority-card-icon" style="background:#fffbeb">
+                <svg viewBox="0 0 18 18" fill="none" stroke="#f59e0b" stroke-width="1.8"><circle cx="9" cy="9" r="7"/><path d="M9 6v4M9 12v.5"/></svg>
+              </div>
+              <div class="priority-card-name">Medium</div>
+              <div class="priority-card-desc">Normal priority</div>
+            </div>
+            <div class="priority-card" id="pc-high" onclick="selectPriority('high')">
+              <div class="priority-card-icon" style="background:#fff7ed">
+                <svg viewBox="0 0 18 18" fill="none" stroke="#f97316" stroke-width="1.8"><path d="M9 3v12M5 7l4-4 4 4"/></svg>
+              </div>
+              <div class="priority-card-name" style="color:var(--text-2)">High</div>
+              <div class="priority-card-desc">Needs attention soon</div>
+            </div>
+            <div class="priority-card" id="pc-critical" onclick="selectPriority('critical')">
+              <div class="priority-card-icon" style="background:#fef2f2">
+                <svg viewBox="0 0 18 18" fill="none" stroke="#dc2626" stroke-width="1.8"><path d="M9 2l7 13H2L9 2z"/><path d="M9 8v3M9 13v.5"/></svg>
+              </div>
+              <div class="priority-card-name" style="color:var(--text-2)">Critical</div>
+              <div class="priority-card-desc">Immediate action</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="action-field-lbl" style="margin-bottom:10px">Category</div>
+          <div class="category-grid">
+            <div class="category-chip" id="cat-hardware" onclick="selectCategory('hardware')"><span class="category-chip-icon">🖥️</span>Hardware</div>
+            <div class="category-chip" id="cat-software" onclick="selectCategory('software')"><span class="category-chip-icon">💻</span>Software</div>
+            <div class="category-chip" id="cat-network"  onclick="selectCategory('network')"><span class="category-chip-icon">🌐</span>Network</div>
+            <div class="category-chip" id="cat-security" onclick="selectCategory('security')"><span class="category-chip-icon">🔒</span>Security</div>
+            <div class="category-chip" id="cat-account"  onclick="selectCategory('account')"><span class="category-chip-icon">👤</span>Account / Access</div>
+            <div class="category-chip selected" id="cat-other"    onclick="selectCategory('other')"><span class="category-chip-icon">❓</span>Other</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Assignment -->
+      <div class="ticket-form-section" style="margin-bottom:0">
+        <div class="ticket-form-section-hd">
+          <div class="ticket-form-section-hd-icon" style="background:#faf5ff">
+            <svg viewBox="0 0 13 13" fill="none" stroke="#7c3aed" stroke-width="1.6"><circle cx="6.5" cy="4" r="2.5"/><path d="M1 12c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+          </div>
+          Assignment & Device
+        </div>
+        <div class="two-col" style="margin-bottom:12px">
+          <div class="field" style="margin:0">
+            <label>Reported By</label>
+            <input id="nt-reporter" placeholder="Who reported this?" />
+          </div>
+          <div class="field" style="margin:0">
+            <label>Assign To</label>
+            <select id="nt-assigned"><option value="">— Unassigned —</option></select>
+          </div>
+        </div>
+        <div class="field" style="margin:0">
+          <label>Linked Device <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(optional)</span></label>
           <select id="nt-device"><option value="">— No device —</option></select>
         </div>
       </div>
-      <div class="two-col">
-        <div class="field"><label>Assign To</label>
-          <select id="nt-assigned"><option value="">— Unassigned —</option></select>
-        </div>
-        <div class="field"><label>Reported By</label>
-          <input id="nt-reporter" placeholder="Name of reporter" />
-        </div>
-      </div>
+
     </div>
-    <div class="modal-ft">
-      <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
-      <button class="btn btn-primary" onclick="createTicket()">Create Ticket</button>
+    <div class="modal-ft" style="justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--text-3)">
+        <span style="color:var(--red)">*</span> Required fields
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="closeModal('modal-new-ticket')">Cancel</button>
+        <button class="btn btn-primary" id="nt-submit-btn" onclick="createTicket()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M6 4v4M4 6h4"/></svg>
+          Create Ticket
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1654,10 +1805,42 @@ async function openDevice(id) {
 }
 
 // ── MODALS ──
+let _ntPriority = 'medium';
+let _ntCategory = 'other';
+
+function selectPriority(p) {
+  _ntPriority = p;
+  ['low','medium','high','critical'].forEach(v => {
+    const el = document.getElementById('pc-' + v);
+    if (el) el.className = 'priority-card' + (v === p ? ' sel-' + v : '');
+  });
+}
+function selectCategory(c) {
+  _ntCategory = c;
+  ['hardware','software','network','security','account','other'].forEach(v => {
+    const el = document.getElementById('cat-' + v);
+    if (el) el.className = 'category-chip' + (v === c ? ' selected' : '');
+  });
+}
+function ntDescCount(el) {
+  const n = el.value.length;
+  const counter = document.getElementById('nt-desc-count');
+  if (!counter) return;
+  counter.textContent = n + ' / 1000';
+  counter.className = 'char-count' + (n > 900 ? ' over' : n > 700 ? ' warn' : '');
+}
+function ntTitleCount() {}
+
 function openNewTicketModal() {
+  _ntPriority = 'medium';
+  _ntCategory = 'other';
   document.getElementById('nt-title').value = '';
-  document.getElementById('nt-desc').value = '';
+  document.getElementById('nt-desc').value  = '';
   document.getElementById('nt-reporter').value = currentAdmin.username;
+  document.getElementById('nt-desc-count').textContent = '0 / 1000';
+  document.getElementById('nt-desc-count').className   = 'char-count';
+  selectPriority('medium');
+  selectCategory('other');
   Promise.all([api('/api/devices'), api('/api/users')]).then(([devices, users]) => {
     document.getElementById('nt-device').innerHTML = '<option value="">— No device —</option>' +
       devices.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('');
@@ -1665,21 +1848,36 @@ function openNewTicketModal() {
       users.map(u => `<option value="${u.username}">${esc(u.username)}</option>`).join('');
   }).catch(() => {});
   document.getElementById('modal-new-ticket').classList.add('open');
+  setTimeout(() => document.getElementById('nt-title').focus(), 120);
 }
 
 async function createTicket() {
-  const title      = document.getElementById('nt-title').value.trim();
-  const description= document.getElementById('nt-desc').value.trim();
-  const priority   = document.getElementById('nt-priority').value;
-  const deviceId   = document.getElementById('nt-device').value;
-  const assignedTo = document.getElementById('nt-assigned').value;
-  if (!title || !description) return showToast('Title and description are required', 'error');
+  const title       = document.getElementById('nt-title').value.trim();
+  const description = document.getElementById('nt-desc').value.trim();
+  const deviceId    = document.getElementById('nt-device').value;
+  const assignedTo  = document.getElementById('nt-assigned').value;
+  const reporter    = document.getElementById('nt-reporter').value.trim();
+  if (!title)       return showToast('Please enter a title', 'error');
+  if (!description) return showToast('Please add a description', 'error');
+  const btn = document.getElementById('nt-submit-btn');
+  btn.textContent = 'Creating…'; btn.disabled = true;
   try {
-    await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, deviceId: deviceId||null, assignedTo: assignedTo||null }) });
+    await api('/api/tickets', { method: 'POST', body: JSON.stringify({
+      title, description,
+      priority: _ntPriority,
+      category: _ntCategory,
+      deviceId: deviceId || null,
+      assignedTo: assignedTo || null,
+      createdBy: reporter || currentAdmin.username
+    })});
     closeModal('modal-new-ticket');
     showToast('Ticket created successfully', 'success');
     loadTickets();
-  } catch (e) { showToast(e.message, 'error'); }
+  } catch (e) {
+    showToast(e.message, 'error');
+    btn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M6 4v4M4 6h4"/></svg> Create Ticket';
+    btn.disabled = false;
+  }
 }
 
 function openAddDeviceModal() {
