@@ -37,7 +37,7 @@
     body {
       background: var(--bg); color: var(--text);
       font-family: 'Inter', -apple-system, system-ui, sans-serif;
-      font-size: 13px; line-height: 1.5;
+      font-size: 14px; line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -147,12 +147,12 @@
       color: rgba(255,255,255,0.25); padding: 6px 8px 3px;
     }
     .nav-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 8px 9px; border-radius: 7px; cursor: pointer;
-      color: rgba(255,255,255,0.55); font-size: 13px; font-weight: 500;
-      transition: background 0.12s, color 0.12s; margin-bottom: 1px; position: relative;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px; border-radius: 8px; cursor: pointer;
+      color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
+      transition: background 0.12s, color 0.12s; margin-bottom: 2px; position: relative;
     }
-    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.6; }
+    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.65; }
     .nav-item:hover { background: var(--sidebar-hov); color: #fff; }
     .nav-item:hover svg { opacity: 1; }
     .nav-item.active {
@@ -205,76 +205,79 @@
     .page-hd {
       display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px;
     }
-    .page-hd h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
-    .page-hd p { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+    .page-hd h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+    .page-hd p { font-size: 14px; color: var(--text-2); margin-top: 3px; }
 
     /* ── STAT CARDS ── */
-    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 26px; }
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
     .stat-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: box-shadow 0.15s, transform 0.15s;
+      border-top: 3px solid transparent;
     }
-    .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
-    .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .stat-lbl { font-size: 12px; font-weight: 600; color: var(--text-2); letter-spacing: 0.02em; }
+    .stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .stat-lbl { font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.02em; }
     .stat-icon {
-      width: 32px; height: 32px; border-radius: 8px;
+      width: 38px; height: 38px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
     }
-    .stat-icon svg { width: 15px; height: 15px; }
-    .stat-val { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
-    .stat-hint { font-size: 11px; color: var(--text-3); margin-top: 5px; }
+    .stat-icon svg { width: 17px; height: 17px; }
+    .stat-val { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+    .stat-hint { font-size: 12px; color: var(--text-3); margin-top: 6px; }
 
     /* ── SECTION LABEL ── */
     .section-lbl {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text-3); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+      background: var(--accent-lt); padding: 9px 14px; border-radius: 8px;
+      border-left: 4px solid var(--accent);
     }
-    .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-lbl::after { content: none; }
 
     /* ── CARDS & TABLES ── */
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
     .card-hd {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 20px; border-bottom: 1px solid var(--border);
-      background: #fafbfc;
+      padding: 16px 22px; border-bottom: 1px solid var(--border);
+      background: #f8fafc;
     }
-    .card-title { font-size: 13px; font-weight: 600; }
-    .card-action { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; transition: opacity 0.15s; }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .card-action { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; transition: opacity 0.15s; }
     .card-action:hover { opacity: 0.7; }
 
     .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px; }
 
     table { width: 100%; border-collapse: collapse; }
-    thead tr { background: #fafbfc; }
+    thead tr { background: #f1f5f9; }
     thead th {
-      padding: 0 18px; height: 36px; text-align: left;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-      color: var(--text-3); border-bottom: 1px solid var(--border);
+      padding: 0 20px; height: 42px; text-align: left;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--text-2); border-bottom: 2px solid var(--border);
     }
-    tbody td { padding: 0 18px; height: 46px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody td { padding: 0 20px; height: 54px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 14px; }
     tbody tr:last-child td { border-bottom: none; }
     tbody tr[onclick] { cursor: pointer; }
-    tbody tr[onclick]:hover td { background: #f8faff; }
+    tbody tr[onclick]:hover td { background: #f0f6ff; }
     tbody tr[onclick]:hover .td-primary { color: var(--accent); }
 
-    .td-primary { font-weight: 500; color: var(--text); transition: color 0.1s; }
-    .td-secondary { color: var(--text-2); }
-    .td-dim { color: var(--text-3); font-size: 12px; }
+    .td-primary { font-weight: 600; color: var(--text); transition: color 0.1s; font-size: 14px; }
+    .td-secondary { color: var(--text-2); font-size: 13px; }
+    .td-dim { color: var(--text-3); font-size: 13px; }
 
     .empty-row td { text-align: center; padding: 36px; color: var(--text-3); font-size: 13px; }
 
     /* ── BADGES ── */
     .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 6px; font-size: 12px; font-weight: 700;
       letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap;
     }
-    .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
     .badge-open { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
     .badge-open .badge-dot { background: #3b82f6; }
@@ -305,16 +308,16 @@
     }
 
     /* ── METRICS ── */
-    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 26px; }
     .metric-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    .metric-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
-    .metric-val { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
-    .metric-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
-    .pbar { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; margin-top: 12px; border: 1px solid var(--border); }
-    .pbar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+    .metric-lbl { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); margin-bottom: 10px; }
+    .metric-val { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    .metric-sub { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+    .pbar { height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; margin-top: 14px; border: 1px solid var(--border); }
+    .pbar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
     .pbar-green { background: var(--green); }
     .pbar-amber { background: #f59e0b; }
     .pbar-red { background: var(--red); }
@@ -329,30 +332,31 @@
     .back-link svg { width: 14px; height: 14px; }
 
     .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-    .ticket-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; flex: 1; line-height: 1.3; }
+    .ticket-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; flex: 1; line-height: 1.3; }
 
     /* Info grid — the key metadata panel */
     .ticket-info-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-      margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .tic-cell {
-      background: var(--card); padding: 14px 16px;
+      background: var(--card); padding: 18px 20px;
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .tic-cell:nth-child(4n) { border-right: none; }
     .tic-cell:nth-last-child(-n+4) { border-bottom: none; }
-    .tic-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
-    .tic-val { font-size: 13px; font-weight: 500; color: var(--text); }
+    .tic-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .tic-val { font-size: 14px; font-weight: 600; color: var(--text); }
     .tic-val.dim { color: var(--text-2); font-weight: 400; }
     .tic-val.with-action { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .ticket-desc {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-      padding: 18px 20px; font-size: 13px; line-height: 1.8; color: var(--text-2);
-      margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px 24px; font-size: 14px; line-height: 1.8; color: var(--text-2);
+      margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-left: 4px solid var(--border);
     }
 
     /* Action bar */
@@ -360,13 +364,13 @@
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
     }
     .action-field-lbl {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-      color: var(--text-3); margin-bottom: 6px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-2); margin-bottom: 8px;
     }
     .action-sel {
       width: 100%; background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text); padding: 9px 32px 9px 13px;
-      font-size: 13px; font-family: inherit; cursor: pointer; outline: none;
+      border-radius: 8px; color: var(--text); padding: 10px 32px 10px 14px;
+      font-size: 14px; font-family: inherit; cursor: pointer; outline: none;
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
       transition: border-color 0.15s, box-shadow 0.15s; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%2394a3b8' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
@@ -375,16 +379,17 @@
     .action-sel:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
     /* Comments */
-    .activity-hd { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
-    .comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .activity-hd { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; background: var(--accent-lt); padding: 8px 14px; border-radius: 7px; border-left: 3px solid var(--accent); display: inline-block; }
+    .comments { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
     .comment {
-      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
-      padding: 13px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 15px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      border-left: 3px solid var(--border-hi);
     }
-    .comment-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .comment-author { font-size: 13px; font-weight: 600; }
-    .comment-time { font-size: 11px; color: var(--text-3); }
-    .comment-body { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+    .comment-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .comment-author { font-size: 14px; font-weight: 700; color: var(--text); }
+    .comment-time { font-size: 12px; color: var(--text-3); }
+    .comment-body { font-size: 14px; color: var(--text-2); line-height: 1.7; }
     .new-comment-row { display: flex; gap: 10px; align-items: flex-end; }
     .new-comment-row .field { flex: 1; margin: 0; }
 
@@ -515,7 +520,7 @@
           </div>
 
           <div class="stat-row">
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#2563eb">
               <div class="stat-top">
                 <span class="stat-lbl">Open Tickets</span>
                 <div class="stat-icon" style="background:#eff6ff">
@@ -525,7 +530,7 @@
               <div class="stat-val" id="stat-open" style="color:var(--accent)">—</div>
               <div class="stat-hint">Awaiting action</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#f59e0b">
               <div class="stat-top">
                 <span class="stat-lbl">In Progress</span>
                 <div class="stat-icon" style="background:#fffbeb">
@@ -535,7 +540,7 @@
               <div class="stat-val" id="stat-inprog" style="color:var(--amber)">—</div>
               <div class="stat-hint">Being worked on</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#16a34a">
               <div class="stat-top">
                 <span class="stat-lbl">Devices Online</span>
                 <div class="stat-icon" style="background:var(--green-lt)">
@@ -545,7 +550,7 @@
               <div class="stat-val" id="stat-online" style="color:var(--green)">—</div>
               <div class="stat-hint">Reporting in last 5m</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#dc2626">
               <div class="stat-top">
                 <span class="stat-lbl">Devices Offline</span>
                 <div class="stat-icon" style="background:#f8fafc">
@@ -559,9 +564,9 @@
 
           <div class="section-lbl">Active Tickets &amp; Devices</div>
           <div class="overview-grid">
-            <div class="card">
-              <div class="card-hd">
-                <span class="card-title">Active Tickets</span>
+            <div class="card" style="border-top:3px solid #2563eb">
+              <div class="card-hd" style="background:#eff6ff">
+                <span class="card-title" style="color:#1d4ed8">Active Tickets</span>
                 <span class="card-action" onclick="loadTickets()">View all →</span>
               </div>
               <table>
@@ -569,9 +574,9 @@
                 <tbody id="overview-tickets"></tbody>
               </table>
             </div>
-            <div class="card">
-              <div class="card-hd">
-                <span class="card-title">Device Health</span>
+            <div class="card" style="border-top:3px solid #16a34a">
+              <div class="card-hd" style="background:#f0fdf4">
+                <span class="card-title" style="color:#166534">Device Health</span>
                 <span class="card-action" onclick="loadDevices()">View all →</span>
               </div>
               <table>
@@ -582,7 +587,10 @@
           </div>
 
           <div class="section-lbl">Assigned to Me</div>
-          <div class="card">
+          <div class="card" style="border-top:3px solid #7c3aed">
+            <div class="card-hd" style="background:#faf5ff;border-bottom:1px solid #e9d5ff">
+              <span class="card-title" style="color:#6d28d9">My Tickets</span>
+            </div>
             <table>
               <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Device</th><th>Updated</th></tr></thead>
               <tbody id="overview-mine"></tbody>
@@ -599,7 +607,10 @@
               New Ticket
             </button>
           </div>
-          <div class="card">
+          <div class="card" style="border-top:3px solid #2563eb">
+            <div class="card-hd" style="background:#eff6ff">
+              <span class="card-title" style="color:#1d4ed8">All Active Tickets</span>
+            </div>
             <table>
               <thead><tr><th>Title</th><th>Reported By</th><th>Device</th><th>Priority</th><th>Status</th><th>Assigned To</th><th>Created</th></tr></thead>
               <tbody id="tickets-tbody"></tbody>
@@ -625,7 +636,10 @@
               Add Device
             </button>
           </div>
-          <div class="card">
+          <div class="card" style="border-top:3px solid #16a34a">
+            <div class="card-hd" style="background:#f0fdf4">
+              <span class="card-title" style="color:#166534">Registered Devices</span>
+            </div>
             <table>
               <thead><tr><th>Name</th><th>Hostname</th><th>OS</th><th>IP Address</th><th>Status</th><th>Last Seen</th><th>Open Tickets</th></tr></thead>
               <tbody id="devices-tbody"></tbody>
@@ -648,8 +662,8 @@
             <div><h1>Ticket History</h1><p>Resolved and closed tickets</p></div>
           </div>
 
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px">
-            <div class="stat-card">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+            <div class="stat-card" style="border-top-color:#16a34a">
               <div class="stat-top">
                 <span class="stat-lbl">Resolved</span>
                 <div class="stat-icon" style="background:var(--green-lt)">
@@ -659,7 +673,7 @@
               <div class="stat-val" id="hist-resolved" style="color:var(--green)">—</div>
               <div class="stat-hint">Successfully resolved</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#94a3b8">
               <div class="stat-top">
                 <span class="stat-lbl">Closed</span>
                 <div class="stat-icon" style="background:#f8fafc">
@@ -669,7 +683,7 @@
               <div class="stat-val" id="hist-closed" style="color:var(--text-2)">—</div>
               <div class="stat-hint">Closed without resolution</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-top-color:#2563eb">
               <div class="stat-top">
                 <span class="stat-lbl">Total Completed</span>
                 <div class="stat-icon" style="background:var(--accent-lt)">
@@ -681,9 +695,9 @@
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-hd">
-              <span class="card-title">Completed Tickets</span>
+          <div class="card" style="border-top:3px solid #64748b">
+            <div class="card-hd" style="background:#f8fafc">
+              <span class="card-title" style="color:#475569">Completed Tickets</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <label style="font-size:12px;color:var(--text-2);font-weight:500">Filter:</label>
                 <select id="history-filter" onchange="applyHistoryFilter()" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 28px 5px 10px;font-size:12px;font-family:inherit;cursor:pointer;outline:none;appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27 fill=%27none%27%3E%3Cpath stroke=%27%2394a3b8%27 stroke-width=%271.5%27 d=%27M1 1l4 4 4-4%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 10px center">
