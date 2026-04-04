@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 module.exports = async function handler(req, res) {
   try {
     if (req.method === 'GET') {
-      // Allow unauthenticated check to see if first-time setup is needed
       const user = fromReq(req);
       if (!user) {
         const count = await prisma.adminUser.count();
@@ -14,7 +13,7 @@ module.exports = async function handler(req, res) {
       }
       const admin = await prisma.adminUser.findUnique({ where: { id: user.id } });
       if (!admin) return res.status(401).json({ error: 'User not found' });
-      return res.json({ id: admin.id, username: admin.username, email: admin.email });
+      return res.json({ id: admin.id, username: admin.username, email: admin.email, role: admin.role });
     }
 
     if (req.method === 'POST') {
@@ -25,10 +24,10 @@ module.exports = async function handler(req, res) {
         if (count > 0) return res.status(403).json({ error: 'Admin already exists' });
         const passwordHash = await bcrypt.hash(password, 10);
         const admin = await prisma.adminUser.create({
-          data: { username, email, passwordHash }
+          data: { username, email, passwordHash, role: 'superadmin' }
         });
-        const token = sign({ id: admin.id, username: admin.username });
-        return res.json({ token, username: admin.username });
+        const token = sign({ id: admin.id, username: admin.username, role: admin.role });
+        return res.json({ token, username: admin.username, role: admin.role });
       }
 
       if (action === 'login') {
@@ -36,8 +35,8 @@ module.exports = async function handler(req, res) {
         if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
         const valid = await bcrypt.compare(password, admin.passwordHash);
         if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-        const token = sign({ id: admin.id, username: admin.username });
-        return res.json({ token, username: admin.username });
+        const token = sign({ id: admin.id, username: admin.username, role: admin.role });
+        return res.json({ token, username: admin.username, role: admin.role });
       }
 
       return res.status(400).json({ error: 'Unknown action' });

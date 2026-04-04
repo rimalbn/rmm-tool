@@ -494,6 +494,10 @@
           History
           <span class="nav-pill" id="nav-history-count">—</span>
         </div>
+        <div class="nav-item" data-page="users" id="nav-users" style="display:none">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm11-6a3 3 0 00-2.93 2.36A5.12 5.12 0 0115 14h1s1 0 1-1-1-4-4-4z"/></svg>
+          User Management
+        </div>
       </div>
       <div class="sidebar-footer">
         <div class="user-av" id="admin-avatar">A</div>
@@ -715,6 +719,54 @@
           </div>
         </div>
 
+        <!-- USER MANAGEMENT -->
+        <div class="page" id="page-users">
+          <div class="page-hd">
+            <div><h1>User Management</h1><p>Manage admin accounts and permissions</p></div>
+            <button class="btn btn-primary" onclick="openCreateUserModal()">
+              <svg viewBox="0 0 12 12"><path stroke="currentColor" stroke-width="2" d="M6 1v10M1 6h10"/></svg>
+              Add User
+            </button>
+          </div>
+
+          <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+            <div class="stat-card" style="border-top-color:#7c3aed">
+              <div class="stat-top">
+                <span class="stat-lbl">Total Users</span>
+                <div class="stat-icon" style="background:#faf5ff"><svg viewBox="0 0 15 15" fill="#7c3aed"><path d="M6 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1z"/></svg></div>
+              </div>
+              <div class="stat-val" id="stat-users-total" style="color:#7c3aed">—</div>
+              <div class="stat-hint">All admin accounts</div>
+            </div>
+            <div class="stat-card" style="border-top-color:#dc2626">
+              <div class="stat-top">
+                <span class="stat-lbl">Superadmins</span>
+                <div class="stat-icon" style="background:var(--red-lt)"><svg viewBox="0 0 15 15" fill="#dc2626"><path d="M7.5 1L9.5 6h5l-4 3 1.5 5-4.5-3-4.5 3L4.5 9 .5 6h5z"/></svg></div>
+              </div>
+              <div class="stat-val" id="stat-users-super" style="color:var(--red)">—</div>
+              <div class="stat-hint">Full access accounts</div>
+            </div>
+            <div class="stat-card" style="border-top-color:#2563eb">
+              <div class="stat-top">
+                <span class="stat-lbl">Admins</span>
+                <div class="stat-icon" style="background:var(--accent-lt)"><svg viewBox="0 0 15 15" fill="#2563eb"><path d="M7.5 1L1 4v4c0 4 3 6.5 6.5 8C11 16.5 14 14 14 10V4z"/></svg></div>
+              </div>
+              <div class="stat-val" id="stat-users-admin" style="color:var(--accent)">—</div>
+              <div class="stat-hint">Standard access</div>
+            </div>
+          </div>
+
+          <div class="card" style="border-top:3px solid #7c3aed">
+            <div class="card-hd" style="background:#faf5ff">
+              <span class="card-title" style="color:#6d28d9">All Accounts</span>
+            </div>
+            <table>
+              <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Member Since</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -831,6 +883,79 @@
   </div>
 </div>
 
+<!-- CREATE USER MODAL -->
+<div class="modal-overlay" id="modal-create-user">
+  <div class="modal">
+    <div class="modal-hd" style="background:#faf5ff"><h3 style="color:#6d28d9">Create New User</h3><button class="modal-x" onclick="closeModal('modal-create-user')">✕</button></div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div class="field"><label>Username</label><input id="cu-username" placeholder="john.doe" /></div>
+        <div class="field"><label>Email</label><input id="cu-email" type="email" placeholder="john@example.com" /></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Password</label><input id="cu-password" type="password" placeholder="Strong password" /></div>
+        <div class="field"><label>Role</label>
+          <select id="cu-role">
+            <option value="admin">Admin — standard access</option>
+            <option value="superadmin">Superadmin — full access</option>
+          </select>
+        </div>
+      </div>
+      <div class="info-note" style="margin-bottom:0">
+        <strong>Admin</strong> can manage tickets and devices.<br>
+        <strong>Superadmin</strong> can also create/delete users and change roles.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-create-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="createUser()">Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal">
+    <div class="modal-hd" style="background:#faf5ff"><h3 style="color:#6d28d9">Edit User — <span id="eu-username-title"></span></h3><button class="modal-x" onclick="closeModal('modal-edit-user')">✕</button></div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div class="field"><label>Email</label><input id="eu-email" type="email" /></div>
+        <div class="field"><label>Role</label>
+          <select id="eu-role">
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>New Password <span style="font-weight:400;text-transform:none;letter-spacing:0">(leave blank to keep current)</span></label><input id="eu-password" type="password" placeholder="Enter new password to change" /></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-edit-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditUser()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE USER MODAL -->
+<div class="modal-overlay" id="modal-delete-user">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hd" style="background:var(--red-lt)"><h3 style="color:var(--red)">Delete User</h3><button class="modal-x" onclick="closeModal('modal-delete-user')">✕</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:10px 0 6px">
+        <div style="width:52px;height:52px;background:var(--red-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="24" height="24" viewBox="0 0 16 16" fill="#dc2626"><path d="M6 8a3 3 0 100-6 3 3 0 000 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1z"/></svg>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">Remove <span id="del-user-name"></span>?</div>
+        <div style="font-size:14px;color:var(--text-2);line-height:1.6">This will permanently delete the account. Tickets assigned to or created by this user will remain.</div>
+      </div>
+    </div>
+    <div class="modal-ft" style="justify-content:center;gap:12px">
+      <button class="btn btn-outline" onclick="closeModal('modal-delete-user')" style="min-width:110px">Cancel</button>
+      <button class="btn" id="confirm-delete-user" style="background:var(--red);color:#fff;min-width:110px">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD DEVICE MODAL -->
 <div class="modal-overlay" id="modal-add-device">
   <div class="modal">
@@ -869,7 +994,7 @@ async function api(path, options = {}) {
 async function initAuth() {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
-    try { const user = await api('/api/auth'); currentAdmin = user; showApp(); return; } catch {}
+    try { const user = await api('/api/auth'); currentAdmin = { ...user }; showApp(); return; } catch {}
     localStorage.removeItem(TOKEN_KEY);
   }
   try {
@@ -903,7 +1028,7 @@ document.getElementById('auth-btn').onclick = async () => {
       data = await api('/api/auth', { method: 'POST', body: JSON.stringify({ action: 'login', username, password }) });
     }
     localStorage.setItem(TOKEN_KEY, data.token);
-    currentAdmin = { username: data.username };
+    currentAdmin = { username: data.username, role: data.role };
     showApp();
   } catch (e) {
     errEl.textContent = e.message; errEl.style.display = 'block';
@@ -917,6 +1042,10 @@ function showApp() {
   document.getElementById('app').style.display = 'block';
   document.getElementById('admin-name').textContent = currentAdmin.username;
   document.getElementById('admin-avatar').textContent = currentAdmin.username[0].toUpperCase();
+  // Show user management nav only for superadmins
+  if (currentAdmin.role === 'superadmin') {
+    document.getElementById('nav-users').style.display = 'flex';
+  }
   loadOverview();
 }
 function logout() { localStorage.removeItem(TOKEN_KEY); location.reload(); }
@@ -937,6 +1066,7 @@ document.querySelectorAll('.nav-item[data-page]').forEach(el => {
     if (page === 'tickets')  loadTickets();
     if (page === 'devices')  loadDevices();
     if (page === 'history')  loadHistory();
+    if (page === 'users')    loadUsers();
   });
 });
 
@@ -1376,6 +1506,94 @@ function timeAgo(iso) {
 function formatUptime(sec) {
   const d=Math.floor(sec/86400),h=Math.floor((sec%86400)/3600),m=Math.floor((sec%3600)/60);
   if(d>0)return d+'d '+h+'h'; if(h>0)return h+'h '+m+'m'; return m+'m';
+}
+
+// ── USER MANAGEMENT ──
+async function loadUsers() {
+  showPage('users');
+  try {
+    const users = await api('/api/users');
+    const superCount = users.filter(u => u.role === 'superadmin').length;
+    const adminCount = users.filter(u => u.role === 'admin').length;
+    document.getElementById('stat-users-total').textContent = users.length;
+    document.getElementById('stat-users-super').textContent = superCount;
+    document.getElementById('stat-users-admin').textContent = adminCount;
+
+    const isSuperadmin = currentAdmin.role === 'superadmin';
+    document.getElementById('users-tbody').innerHTML = users.length ? users.map(u => {
+      const isMe = u.id === currentAdmin.id || u.username === currentAdmin.username;
+      const roleColor = u.role === 'superadmin' ? 'background:#fef2f2;color:#dc2626;border:1px solid #fecaca' : 'background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe';
+      const roleIcon  = u.role === 'superadmin' ? '★ ' : '';
+      return `<tr>
+        <td class="td-primary">${esc(u.username)}${isMe ? ' <span style="font-size:11px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:2px 7px;border-radius:4px;font-weight:700">You</span>' : ''}</td>
+        <td class="td-secondary">${esc(u.email)}</td>
+        <td><span style="display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;${roleColor}">${roleIcon}${u.role}</span></td>
+        <td class="td-dim">${timeAgo(u.createdAt)}</td>
+        <td>
+          ${isSuperadmin ? `
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditUser(${JSON.stringify({id:u.id,username:u.username,email:u.email,role:u.role})})">Edit</button>
+              ${!isMe ? `<button class="btn" style="font-size:12px;padding:5px 12px;background:var(--red-lt);color:var(--red);border:1px solid #fecaca" onclick="confirmDeleteUser('${u.id}','${esc(u.username)}')">Delete</button>` : ''}
+            </div>` : '<span class="td-dim">—</span>'}
+        </td>
+      </tr>`;
+    }).join('') : `<tr class="empty-row"><td colspan="5">No users found</td></tr>`;
+  } catch (e) { console.error(e); }
+}
+
+function openCreateUserModal() {
+  document.getElementById('cu-username').value = '';
+  document.getElementById('cu-email').value    = '';
+  document.getElementById('cu-password').value = '';
+  document.getElementById('cu-role').value     = 'admin';
+  document.getElementById('modal-create-user').classList.add('open');
+}
+async function createUser() {
+  const username = document.getElementById('cu-username').value.trim();
+  const email    = document.getElementById('cu-email').value.trim();
+  const password = document.getElementById('cu-password').value;
+  const role     = document.getElementById('cu-role').value;
+  if (!username || !email || !password) return alert('All fields are required');
+  try {
+    await api('/api/users', { method: 'POST', body: JSON.stringify({ username, email, password, role }) });
+    closeModal('modal-create-user');
+    loadUsers();
+  } catch (e) { alert(e.message); }
+}
+
+let _editUserId = null;
+function openEditUser(info) {
+  _editUserId = info.id;
+  document.getElementById('eu-username-title').textContent = info.username;
+  document.getElementById('eu-email').value    = info.email;
+  document.getElementById('eu-role').value     = info.role;
+  document.getElementById('eu-password').value = '';
+  document.getElementById('modal-edit-user').classList.add('open');
+}
+async function saveEditUser() {
+  const email    = document.getElementById('eu-email').value.trim();
+  const role     = document.getElementById('eu-role').value;
+  const password = document.getElementById('eu-password').value;
+  const body = { role, email };
+  if (password) body.password = password;
+  try {
+    await api('/api/users?id=' + _editUserId, { method: 'PUT', body: JSON.stringify(body) });
+    closeModal('modal-edit-user');
+    loadUsers();
+  } catch (e) { alert(e.message); }
+}
+
+function confirmDeleteUser(id, username) {
+  document.getElementById('del-user-name').textContent = username;
+  document.getElementById('confirm-delete-user').onclick = () => deleteUser(id);
+  document.getElementById('modal-delete-user').classList.add('open');
+}
+async function deleteUser(id) {
+  try {
+    await api('/api/users?id=' + id, { method: 'DELETE' });
+    closeModal('modal-delete-user');
+    loadUsers();
+  } catch (e) { alert(e.message); }
 }
 
 initAuth();
