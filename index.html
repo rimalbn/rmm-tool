@@ -230,11 +230,10 @@
     /* ── SECTION LABEL ── */
     .section-lbl {
       font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
-      background: var(--accent-lt); padding: 9px 14px; border-radius: 8px;
-      border-left: 4px solid var(--accent);
+      color: var(--text-2); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
     }
-    .section-lbl::after { content: none; }
+    .section-lbl::before { content: ''; width: 4px; height: 16px; background: var(--accent); border-radius: 2px; flex-shrink: 0; }
+    .section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
     /* ── CARDS & TABLES ── */
     .card {
@@ -520,7 +519,7 @@
           </div>
 
           <div class="stat-row">
-            <div class="stat-card" style="border-top-color:#2563eb">
+            <div class="stat-card" style="border-top-color:#2563eb;cursor:pointer" onclick="loadTickets('open')" title="View open tickets">
               <div class="stat-top">
                 <span class="stat-lbl">Open Tickets</span>
                 <div class="stat-icon" style="background:#eff6ff">
@@ -530,7 +529,7 @@
               <div class="stat-val" id="stat-open" style="color:var(--accent)">—</div>
               <div class="stat-hint">Awaiting action</div>
             </div>
-            <div class="stat-card" style="border-top-color:#f59e0b">
+            <div class="stat-card" style="border-top-color:#f59e0b;cursor:pointer" onclick="loadTickets('in_progress')" title="View in-progress tickets">
               <div class="stat-top">
                 <span class="stat-lbl">In Progress</span>
                 <div class="stat-icon" style="background:#fffbeb">
@@ -540,7 +539,7 @@
               <div class="stat-val" id="stat-inprog" style="color:var(--amber)">—</div>
               <div class="stat-hint">Being worked on</div>
             </div>
-            <div class="stat-card" style="border-top-color:#16a34a">
+            <div class="stat-card" style="border-top-color:#16a34a;cursor:pointer" onclick="loadDevices('online')" title="View online devices">
               <div class="stat-top">
                 <span class="stat-lbl">Devices Online</span>
                 <div class="stat-icon" style="background:var(--green-lt)">
@@ -550,7 +549,7 @@
               <div class="stat-val" id="stat-online" style="color:var(--green)">—</div>
               <div class="stat-hint">Reporting in last 5m</div>
             </div>
-            <div class="stat-card" style="border-top-color:#dc2626">
+            <div class="stat-card" style="border-top-color:#dc2626;cursor:pointer" onclick="loadDevices('offline')" title="View offline devices">
               <div class="stat-top">
                 <span class="stat-lbl">Devices Offline</span>
                 <div class="stat-icon" style="background:#f8fafc">
@@ -567,7 +566,7 @@
             <div class="card" style="border-top:3px solid #2563eb">
               <div class="card-hd" style="background:#eff6ff">
                 <span class="card-title" style="color:#1d4ed8">Active Tickets</span>
-                <span class="card-action" onclick="loadTickets()">View all →</span>
+                <span class="card-action" onclick="loadTickets(null)">View all →</span>
               </div>
               <table>
                 <thead><tr><th>Title</th><th>Priority</th><th>Status</th></tr></thead>
@@ -577,7 +576,7 @@
             <div class="card" style="border-top:3px solid #16a34a">
               <div class="card-hd" style="background:#f0fdf4">
                 <span class="card-title" style="color:#166534">Device Health</span>
-                <span class="card-action" onclick="loadDevices()">View all →</span>
+                <span class="card-action" onclick="loadDevices(null)">View all →</span>
               </div>
               <table>
                 <thead><tr><th>Device</th><th>Status</th><th>CPU</th></tr></thead>
@@ -922,15 +921,19 @@ async function loadOverview() {
 }
 
 // ── ACTIVE TICKETS ──
-async function loadTickets() {
+async function loadTickets(filterStatus = null) {
   showPage('tickets');
   try {
     const tickets = await api('/api/tickets');
-    // Only show open + in_progress
     const active = tickets.filter(t => t.status === 'open' || t.status === 'in_progress');
-    document.getElementById('tickets-subtitle').textContent = `${active.length} active ticket${active.length !== 1 ? 's' : ''}`;
+    const display = filterStatus ? active.filter(t => t.status === filterStatus) : active;
+    const filterLabel = filterStatus === 'open' ? 'Open tickets' : filterStatus === 'in_progress' ? 'In-progress tickets' : 'Open and in-progress tickets';
+    document.getElementById('tickets-subtitle').textContent = `${display.length} ${filterLabel.toLowerCase()}`;
+    // Update card header to reflect filter
+    const cardTitle = document.querySelector('#page-tickets .card-title');
+    if (cardTitle) cardTitle.textContent = filterStatus ? (filterStatus === 'open' ? 'Open Tickets' : 'In-Progress Tickets') : 'All Active Tickets';
     const tbody = document.getElementById('tickets-tbody');
-    tbody.innerHTML = active.length ? active.map(t => `
+    tbody.innerHTML = display.length ? display.map(t => `
       <tr onclick="openTicket('${t.id}','tickets')">
         <td class="td-primary">${esc(t.title)}</td>
         <td class="td-secondary">${t.createdBy ? esc(t.createdBy) : '<span class="td-dim">—</span>'}</td>
@@ -939,7 +942,7 @@ async function loadTickets() {
         <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
         <td class="td-secondary">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">Unassigned</span>'}</td>
         <td class="td-dim">${timeAgo(t.createdAt)}</td>
-      </tr>`).join('') : `<tr class="empty-row"><td colspan="7">No active tickets — great job!</td></tr>`;
+      </tr>`).join('') : `<tr class="empty-row"><td colspan="7">No ${filterLabel.toLowerCase()} right now</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -1102,14 +1105,20 @@ async function addComment(ticketId) {
 }
 
 // ── DEVICES ──
-async function loadDevices() {
+async function loadDevices(filterStatus = null) {
   showPage('devices');
   try {
     const devices = await api('/api/devices');
     const fiveMin = 5 * 60 * 1000;
+    const now = Date.now();
+    let display = devices;
+    if (filterStatus === 'online')  display = devices.filter(d => new Date(d.lastSeen) > new Date(now - fiveMin));
+    if (filterStatus === 'offline') display = devices.filter(d => !(new Date(d.lastSeen) > new Date(now - fiveMin)));
+    const cardTitle = document.querySelector('#page-devices .card-title');
+    if (cardTitle) cardTitle.textContent = filterStatus === 'online' ? 'Online Devices' : filterStatus === 'offline' ? 'Offline Devices' : 'Registered Devices';
     const tbody = document.getElementById('devices-tbody');
-    tbody.innerHTML = devices.length ? devices.map(d => {
-      const online = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
+    tbody.innerHTML = display.length ? display.map(d => {
+      const online = new Date(d.lastSeen) > new Date(now - fiveMin);
       return `<tr onclick="openDevice('${d.id}')">
         <td class="td-primary">${esc(d.name)}</td>
         <td class="td-secondary">${esc(d.hostname)}</td>
@@ -1119,7 +1128,7 @@ async function loadDevices() {
         <td class="td-dim">${timeAgo(d.lastSeen)}</td>
         <td class="td-secondary">${d._count ? d._count.tickets : 0}</td>
       </tr>`;
-    }).join('') : `<tr class="empty-row"><td colspan="7">No devices registered yet</td></tr>`;
+    }).join('') : `<tr class="empty-row"><td colspan="7">${filterStatus ? 'No ' + filterStatus + ' devices' : 'No devices registered yet'}</td></tr>`;
   } catch (e) { console.error(e); }
 }
 
