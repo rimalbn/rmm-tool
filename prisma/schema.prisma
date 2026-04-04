@@ -23,6 +23,9 @@ model Device {
   os         String?
   agentToken String   @unique
   ipAddress  String?
+  owner      String?
+  location   String?
+  notes      String?
   lastSeen   DateTime @default(now())
   online     Boolean  @default(false)
   createdAt  DateTime @default(now())

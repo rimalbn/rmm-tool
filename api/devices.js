@@ -50,6 +50,22 @@ module.exports = async function handler(req, res) {
       return res.status(201).json({ ...device, agentToken });
     }
 
+    if (req.method === 'PUT') {
+      const { id } = req.query;
+      if (!id) return res.status(400).json({ error: 'id required' });
+      const { name, owner, location, notes } = req.body;
+      const device = await prisma.device.update({
+        where: { id },
+        data: {
+          ...(name     !== undefined && { name }),
+          ...(owner    !== undefined && { owner }),
+          ...(location !== undefined && { location }),
+          ...(notes    !== undefined && { notes })
+        }
+      });
+      return res.json(device);
+    }
+
     if (req.method === 'DELETE') {
       const { id } = req.query;
       if (!id) return res.status(400).json({ error: 'id required' });

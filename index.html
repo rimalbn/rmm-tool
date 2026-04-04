@@ -754,6 +754,83 @@
   </div>
 </div>
 
+<!-- REMOTE ACCESS MODAL -->
+<div class="modal-overlay" id="modal-remote-access">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>Remote Access — <span id="ra-device-name"></span></h3>
+      <button class="modal-x" onclick="closeModal('modal-remote-access')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <div class="action-field-lbl" style="margin-bottom:8px">SSH (Terminal)</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="token-box" id="ra-ssh" style="flex:1;color:var(--accent)"></div>
+          <button class="btn btn-outline" data-copy="ra-ssh" onclick="copyText('ra-ssh')">Copy</button>
+        </div>
+      </div>
+      <div>
+        <div class="action-field-lbl" style="margin-bottom:8px">RDP (Windows Remote Desktop)</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="token-box" id="ra-rdp" style="flex:1;color:var(--purple)"></div>
+          <button class="btn btn-outline" data-copy="ra-rdp" onclick="copyText('ra-rdp')">Copy</button>
+          <a id="ra-rdp-link" class="btn btn-outline" href="#" style="text-decoration:none">Open RDP</a>
+        </div>
+      </div>
+      <div>
+        <div class="action-field-lbl" style="margin-bottom:8px">VNC Address</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="token-box" id="ra-vnc" style="flex:1;color:var(--amber)"></div>
+          <button class="btn btn-outline" data-copy="ra-vnc" onclick="copyText('ra-vnc')">Copy</button>
+        </div>
+      </div>
+      <div class="info-note" style="margin-bottom:0">The SSH username defaults to the device owner field. Edit the device to update it.</div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-remote-access')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT DEVICE MODAL -->
+<div class="modal-overlay" id="modal-edit-device">
+  <div class="modal">
+    <div class="modal-hd"><h3>Edit Device</h3><button class="modal-x" onclick="closeModal('modal-edit-device')">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Device Name</label><input id="ed-name" placeholder="e.g. dev-vm-01" /></div>
+      <div class="two-col">
+        <div class="field"><label>Owner / Assigned User</label><input id="ed-owner" placeholder="e.g. john.doe" /></div>
+        <div class="field"><label>Location</label><input id="ed-location" placeholder="e.g. Server Room A" /></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="ed-notes" placeholder="Any additional info about this device…"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('modal-edit-device')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditDevice()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE DEVICE MODAL -->
+<div class="modal-overlay" id="modal-delete-device">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hd" style="background:var(--red-lt)"><h3 style="color:var(--red)">Delete Device</h3><button class="modal-x" onclick="closeModal('modal-delete-device')">✕</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:10px 0 6px">
+        <div style="width:52px;height:52px;background:var(--red-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="24" height="24" viewBox="0 0 14 14" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M2 3h10M5 3V2h4v1M3 3l1 9h6l1-9"/></svg>
+        </div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px">Remove <span id="del-device-name"></span>?</div>
+        <div style="font-size:14px;color:var(--text-2);line-height:1.6">This will permanently delete the device and all its health snapshots. Any linked tickets will be unlinked but not deleted.</div>
+      </div>
+    </div>
+    <div class="modal-ft" style="justify-content:center;gap:12px">
+      <button class="btn btn-outline" onclick="closeModal('modal-delete-device')" style="min-width:110px">Cancel</button>
+      <button class="btn" id="confirm-delete-device" style="background:var(--red);color:#fff;min-width:110px">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD DEVICE MODAL -->
 <div class="modal-overlay" id="modal-add-device">
   <div class="modal">
@@ -1149,14 +1226,34 @@ async function openDevice(id) {
     function bar(v) { return v == null ? '' : `<div class="pbar"><div class="pbar-fill ${pc(v)}" style="width:${Math.min(100,v).toFixed(1)}%"></div></div>`; }
 
     document.getElementById('device-detail-content').innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-        <h1 style="font-size:20px;font-weight:700;letter-spacing:-0.02em">${esc(d.name)}</h1>
-        <div class="status-cell">
-          <span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span>
-          <span class="td-secondary">${online ? 'Online' : 'Offline'}</span>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+            <h1 style="font-size:24px;font-weight:700;letter-spacing:-0.02em">${esc(d.name)}</h1>
+            <div class="status-cell">
+              <span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span>
+              <span class="td-secondary">${online ? 'Online' : 'Offline'}</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--text-3)">${esc(d.hostname)} · ${d.os||'Unknown OS'} · ${d.ipAddress||'Unknown IP'}${d.owner ? ' · Owner: <strong style="color:var(--text-2)">'+esc(d.owner)+'</strong>' : ''}${d.location ? ' · 📍 '+esc(d.location) : ''} · Last seen ${timeAgo(d.lastSeen)}</div>
+          ${d.notes ? `<div style="margin-top:8px;font-size:13px;color:var(--text-2);background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--border-hi);border-radius:6px;padding:8px 12px">${esc(d.notes)}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;margin-top:4px">
+          <button class="btn btn-outline" onclick="openRemoteAccess(${JSON.stringify({hostname:d.hostname,ip:d.ipAddress,owner:d.owner,name:d.name})})">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="12" height="8" rx="1"/><path d="M4 13h6M7 10v3M4 5l2 2-2 2"/></svg>
+            Remote Access
+          </button>
+          <button class="btn btn-outline" onclick="openEditDevice(${JSON.stringify({id:d.id,name:d.name,owner:d.owner||'',location:d.location||'',notes:d.notes||''})})">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.5 1.5l3 3L5 12H2v-3L9.5 1.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn" style="background:var(--red-lt);color:var(--red);border:1px solid #fecaca" onclick="confirmDeleteDevice('${d.id}', '${esc(d.name)}')">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h10M5 3V2h4v1M3 3l1 9h6l1-9"/></svg>
+            Delete
+          </button>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:26px">${esc(d.hostname)} · ${d.os||'Unknown OS'} · ${d.ipAddress||'Unknown IP'} · Last seen ${timeAgo(d.lastSeen)}</div>
+      <div style="margin-bottom:26px"></div>
 
       <div class="section-lbl" style="margin-bottom:14px">Health Metrics</div>
       <div class="metric-grid">
@@ -1282,6 +1379,67 @@ function formatUptime(sec) {
 }
 
 initAuth();
+
+// ── REMOTE ACCESS ──
+function openRemoteAccess(info) {
+  const ssh  = `ssh ${info.owner || 'user'}@${info.ip || info.hostname}`;
+  const rdp  = `mstsc /v:${info.ip || info.hostname}`;
+  const vnc  = `${info.ip || info.hostname}:5900`;
+  document.getElementById('ra-device-name').textContent = info.name;
+  document.getElementById('ra-ssh').textContent  = ssh;
+  document.getElementById('ra-rdp').textContent  = rdp;
+  document.getElementById('ra-vnc').textContent  = vnc;
+  document.getElementById('ra-rdp-link').href = `rdp://full%20address=s:${info.ip || info.hostname}`;
+  document.getElementById('modal-remote-access').classList.add('open');
+}
+function copyText(id) {
+  const txt = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.querySelector(`[data-copy="${id}"]`);
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1800); }
+  });
+}
+
+// ── EDIT DEVICE ──
+let _editDeviceId = null;
+function openEditDevice(info) {
+  _editDeviceId = info.id;
+  document.getElementById('ed-name').value     = info.name;
+  document.getElementById('ed-owner').value    = info.owner;
+  document.getElementById('ed-location').value = info.location;
+  document.getElementById('ed-notes').value    = info.notes;
+  document.getElementById('modal-edit-device').classList.add('open');
+}
+async function saveEditDevice() {
+  const name     = document.getElementById('ed-name').value.trim();
+  const owner    = document.getElementById('ed-owner').value.trim();
+  const location = document.getElementById('ed-location').value.trim();
+  const notes    = document.getElementById('ed-notes').value.trim();
+  if (!name) return alert('Device name is required');
+  try {
+    await api('/api/devices?id=' + _editDeviceId, {
+      method: 'PUT',
+      body: JSON.stringify({ name, owner, location, notes })
+    });
+    closeModal('modal-edit-device');
+    openDevice(_editDeviceId);
+  } catch (e) { alert(e.message); }
+}
+
+// ── DELETE DEVICE ──
+function confirmDeleteDevice(id, name) {
+  document.getElementById('del-device-name').textContent = name;
+  document.getElementById('confirm-delete-device').onclick = () => deleteDevice(id);
+  document.getElementById('modal-delete-device').classList.add('open');
+}
+async function deleteDevice(id) {
+  try {
+    await api('/api/devices?id=' + id, { method: 'DELETE' });
+    closeModal('modal-delete-device');
+    showPage('devices');
+    loadDevices();
+  } catch (e) { alert(e.message); }
+}
 </script>
 </body>
 </html>
