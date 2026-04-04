@@ -1250,10 +1250,10 @@ async function loadOverview() {
     const hour = new Date().getHours();
     const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     document.getElementById('welcome-greeting').textContent = `${greet}, ${currentAdmin.username} 👋`;
-    const mine = active.filter(t => t.assignedTo === currentAdmin.username).length;
+    const mineCount = active.filter(t => t.assignedTo === currentAdmin.username).length;
     document.getElementById('welcome-dots').innerHTML = [
       { val: active.length, lbl: 'Active Tickets' },
-      { val: mine,          lbl: 'Assigned to Me' },
+      { val: mineCount,     lbl: 'Assigned to Me' },
       { val: onlineCt,      lbl: 'Devices Online' },
       { val: historyCt,     lbl: 'Resolved Total' },
     ].map(d => `<div class="welcome-dot"><div class="welcome-dot-val">${d.val}</div><div>${d.lbl}</div></div>`).join('');
