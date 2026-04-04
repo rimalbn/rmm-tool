@@ -15,8 +15,9 @@ module.exports = async function handler(req, res) {
       return res.json(admins);
     }
 
-    // All write operations require superadmin
-    if (user.role !== 'superadmin') {
+    // All write operations require superadmin — check DB directly so old JWTs work
+    const dbUser = await prisma.adminUser.findUnique({ where: { id: user.id }, select: { role: true } });
+    if (!dbUser || dbUser.role !== 'superadmin') {
       return res.status(403).json({ error: 'Superadmin access required' });
     }
 
