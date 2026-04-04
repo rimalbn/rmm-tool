@@ -192,6 +192,96 @@
     .signout-btn:hover { color: rgba(255,255,255,0.7); }
     .signout-btn svg { width: 14px; height: 14px; }
 
+    /* ── TOAST ── */
+    #toast-container {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 18px; border-radius: 12px; min-width: 280px; max-width: 380px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.14); pointer-events: all;
+      font-size: 14px; font-weight: 500; border: 1px solid transparent;
+      animation: toast-in 0.28s cubic-bezier(0.34,1.56,0.64,1);
+      backdrop-filter: blur(8px);
+    }
+    .toast.removing { animation: toast-out 0.22s ease forwards; }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(40px) scale(0.94); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes toast-out {
+      from { opacity: 1; transform: translateX(0) scale(1); }
+      to   { opacity: 0; transform: translateX(40px) scale(0.94); }
+    }
+    .toast-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .toast-error   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .toast-info    { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .toast-icon { width: 20px; height: 20px; flex-shrink: 0; }
+    .toast-close { margin-left: auto; background: none; border: none; cursor: pointer; opacity: 0.4; font-size: 16px; padding: 0 2px; color: inherit; transition: opacity 0.15s; }
+    .toast-close:hover { opacity: 0.8; }
+
+    /* ── EMPTY STATES ── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 56px 24px; gap: 16px; text-align: center;
+    }
+    .empty-state-icon {
+      width: 80px; height: 80px; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+    }
+    .empty-state-icon svg { width: 40px; height: 40px; }
+    .empty-state h3 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0; }
+    .empty-state p { font-size: 14px; color: var(--text-2); margin: 0; max-width: 300px; line-height: 1.6; }
+
+    /* ── WELCOME BANNER ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1a2035 0%, #1e3a5f 50%, #1a2035 100%);
+      border-radius: 16px; padding: 26px 30px; margin-bottom: 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      box-shadow: 0 4px 20px rgba(26,32,53,0.2); overflow: hidden; position: relative;
+    }
+    .welcome-banner::before {
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-banner::after {
+      content: ''; position: absolute; bottom: -60px; left: 30%;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-text h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.55); }
+    .welcome-dots { display: flex; gap: 8px; flex-wrap: wrap; }
+    .welcome-dot {
+      display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 14px;
+      font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;
+    }
+    .welcome-dot-val { font-size: 18px; font-weight: 700; color: #fff; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fade-up 0.3s ease both; }
+    .fade-up-1 { animation-delay: 0.05s; }
+    .fade-up-2 { animation-delay: 0.10s; }
+    .fade-up-3 { animation-delay: 0.15s; }
+    .fade-up-4 { animation-delay: 0.20s; }
+
+    /* ── SAVE INDICATOR ── */
+    .save-indicator {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--green); font-weight: 600;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .save-indicator.show { opacity: 1; }
+
     /* ── MAIN ── */
     .main { flex: 1; overflow-y: auto; background: var(--bg); }
     .main::-webkit-scrollbar { width: 5px; }
@@ -199,7 +289,7 @@
 
     .page-wrap { padding: 32px 36px; max-width: 1100px; }
     .page { display: none; }
-    .page.active { display: block; }
+    .page.active { display: block; animation: fade-up 0.25s ease; }
 
     /* ── PAGE HEADER ── */
     .page-hd {
@@ -573,6 +663,13 @@
 
         <!-- OVERVIEW -->
         <div class="page active" id="page-overview">
+          <div id="welcome-banner" class="welcome-banner fade-up">
+            <div class="welcome-text">
+              <h2 id="welcome-greeting">Good morning 👋</h2>
+              <p id="welcome-sub">Here's what's happening across your systems today.</p>
+            </div>
+            <div class="welcome-dots" id="welcome-dots"></div>
+          </div>
           <div class="page-hd">
             <div><h1>Overview</h1><p>System status at a glance</p></div>
             <button class="btn btn-primary" onclick="openNewTicketModal()">
@@ -1149,6 +1246,18 @@ async function loadOverview() {
     document.getElementById('nav-device-count').textContent  = devices.length || '0';
     document.getElementById('nav-history-count').textContent = historyCt || '0';
 
+    // Welcome banner
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('welcome-greeting').textContent = `${greet}, ${currentAdmin.username} 👋`;
+    const mine = active.filter(t => t.assignedTo === currentAdmin.username).length;
+    document.getElementById('welcome-dots').innerHTML = [
+      { val: active.length, lbl: 'Active Tickets' },
+      { val: mine,          lbl: 'Assigned to Me' },
+      { val: onlineCt,      lbl: 'Devices Online' },
+      { val: historyCt,     lbl: 'Resolved Total' },
+    ].map(d => `<div class="welcome-dot"><div class="welcome-dot-val">${d.val}</div><div>${d.lbl}</div></div>`).join('');
+
     // Recent active tickets only
     const tbody = document.getElementById('overview-tickets');
     tbody.innerHTML = active.length ? active.slice(0, 6).map(t => `
@@ -1156,7 +1265,7 @@ async function loadOverview() {
         <td class="td-primary">${esc(t.title)}</td>
         <td><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></td>
         <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
-      </tr>`).join('') : `<tr class="empty-row"><td colspan="3">No active tickets — all caught up!</td></tr>`;
+      </tr>`).join('') : `<tr><td colspan="3"><div class="empty-state" style="padding:30px 16px"><div class="empty-state-icon" style="background:#f0fdf4"><svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#16a34a" stroke-width="2"/><path stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" d="M13 20l5 5 9-9"/></svg></div><h3 style="font-size:15px">All clear!</h3><p style="font-size:13px">No active tickets right now.</p></div></td></tr>`;
 
     // Devices
     const dbody = document.getElementById('overview-devices');
@@ -1208,7 +1317,7 @@ async function loadTickets(filterStatus = null) {
         <td><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></td>
         <td class="td-secondary">${t.assignedTo ? esc(t.assignedTo) : '<span class="td-dim">Unassigned</span>'}</td>
         <td class="td-dim">${timeAgo(t.createdAt)}</td>
-      </tr>`).join('') : `<tr class="empty-row"><td colspan="7">No ${filterLabel.toLowerCase()} right now</td></tr>`;
+      </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon" style="background:#eff6ff"><svg viewBox="0 0 40 40" fill="none"><rect x="6" y="8" width="28" height="24" rx="3" stroke="#2563eb" stroke-width="2"/><path stroke="#2563eb" stroke-width="2" stroke-linecap="round" d="M13 16h14M13 22h8"/></svg></div><h3>No tickets here</h3><p>No ${filterLabel.toLowerCase()} right now. Create one to get started.</p><button class="btn btn-primary" onclick="openNewTicketModal()" style="margin-top:4px">+ New Ticket</button></div></td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -1382,22 +1491,30 @@ async function openTicket(id, origin) {
 async function assignToMe(id) {
   try {
     await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ assignedTo: currentAdmin.username }) });
+    showToast('Ticket assigned to you', 'success');
     openTicket(id, _ticketOrigin);
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 async function saveTicketChanges(id) {
   const status     = document.getElementById('td-status-' + id)?.value;
   const assignedTo = document.getElementById('td-assignee-' + id)?.value;
   const priority   = document.getElementById('td-priority-' + id)?.value;
+  const btn = document.querySelector(`[onclick="saveTicketChanges('${id}')"]`);
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
   try {
     await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ status, assignedTo: assignedTo || null, priority }) });
+    showToast('Ticket updated successfully', 'success');
     if (status === 'resolved' || status === 'closed') {
-      loadHistory();
+      showToast('Ticket moved to History', 'info');
+      setTimeout(() => loadHistory(), 600);
     } else {
       openTicket(id, _ticketOrigin);
     }
-  } catch (e) { alert(e.message); }
+  } catch (e) {
+    showToast(e.message, 'error');
+    if (btn) { btn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg> Save Changes'; btn.disabled = false; }
+  }
 }
 
 let _commentType = {};
@@ -1426,13 +1543,16 @@ function switchTab(ticketId, type) {
 async function addComment(ticketId) {
   const el = document.getElementById('new-comment-' + ticketId);
   const content = el.value.trim();
-  if (!content) return;
+  if (!content) return showToast('Please write something before posting', 'error');
   const type = _commentType[ticketId] || 'note';
+  const btn = document.getElementById('compose-btn-' + ticketId);
+  if (btn) { btn.textContent = 'Posting…'; btn.disabled = true; }
   try {
     await api('/api/comments', { method: 'POST', body: JSON.stringify({ ticketId, content, type }) });
+    showToast(type === 'note' ? 'Internal note added' : 'Customer reply posted', 'success');
     el.value = '';
     openTicket(ticketId, _ticketOrigin);
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); if (btn) { btn.disabled = false; } }
 }
 
 // ── DEVICES ──
@@ -1459,7 +1579,7 @@ async function loadDevices(filterStatus = null) {
         <td class="td-dim">${timeAgo(d.lastSeen)}</td>
         <td class="td-secondary">${d._count ? d._count.tickets : 0}</td>
       </tr>`;
-    }).join('') : `<tr class="empty-row"><td colspan="7">${filterStatus ? 'No ' + filterStatus + ' devices' : 'No devices registered yet'}</td></tr>`;
+    }).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon" style="background:#f0fdf4"><svg viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="22" rx="2" stroke="#16a34a" stroke-width="2"/><path stroke="#16a34a" stroke-width="2" d="M16 30h8M20 30v4"/></svg></div><h3>${filterStatus ? 'No ' + filterStatus + ' devices' : 'No devices yet'}</h3><p>${filterStatus ? 'No devices are currently ' + filterStatus + '.' : 'Add your first device to start monitoring.'}</p>${!filterStatus ? '<button class="btn btn-primary" onclick="openAddDeviceModal()" style="margin-top:4px">+ Add Device</button>' : ''}</div></td></tr>`;
   } catch (e) { console.error(e); }
 }
 
@@ -1553,12 +1673,13 @@ async function createTicket() {
   const priority   = document.getElementById('nt-priority').value;
   const deviceId   = document.getElementById('nt-device').value;
   const assignedTo = document.getElementById('nt-assigned').value;
-  if (!title || !description) return alert('Title and description are required');
+  if (!title || !description) return showToast('Title and description are required', 'error');
   try {
     await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title, description, priority, deviceId: deviceId||null, assignedTo: assignedTo||null }) });
     closeModal('modal-new-ticket');
+    showToast('Ticket created successfully', 'success');
     loadTickets();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 function openAddDeviceModal() {
@@ -1576,8 +1697,9 @@ async function addDevice() {
     document.getElementById('ad-install').textContent = `AGENT_TOKEN=${d.agentToken} RMM_URL=https://your-app.vercel.app node agent.js`;
     document.getElementById('ad-result').style.display = 'block';
     document.getElementById('ad-btn').style.display = 'none';
+    showToast('Device added — copy the token below', 'success');
     loadDevices();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(el => {
@@ -1679,8 +1801,9 @@ async function createUser() {
   try {
     await api('/api/users', { method: 'POST', body: JSON.stringify({ username, email, password, role }) });
     closeModal('modal-create-user');
+    showToast(`User "${username}" created`, 'success');
     loadUsers();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 let _editUserId = null;
@@ -1701,8 +1824,9 @@ async function saveEditUser() {
   try {
     await api('/api/users?id=' + _editUserId, { method: 'PUT', body: JSON.stringify(body) });
     closeModal('modal-edit-user');
+    showToast('User updated successfully', 'success');
     loadUsers();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 function confirmDeleteUser(id, username) {
@@ -1714,8 +1838,9 @@ async function deleteUser(id) {
   try {
     await api('/api/users?id=' + id, { method: 'DELETE' });
     closeModal('modal-delete-user');
+    showToast('User removed', 'info');
     loadUsers();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 initAuth();
@@ -1755,15 +1880,16 @@ async function saveEditDevice() {
   const owner    = document.getElementById('ed-owner').value.trim();
   const location = document.getElementById('ed-location').value.trim();
   const notes    = document.getElementById('ed-notes').value.trim();
-  if (!name) return alert('Device name is required');
+  if (!name) return showToast('Device name is required', 'error');
   try {
     await api('/api/devices?id=' + _editDeviceId, {
       method: 'PUT',
       body: JSON.stringify({ name, owner, location, notes })
     });
     closeModal('modal-edit-device');
+    showToast('Device info updated', 'success');
     openDevice(_editDeviceId);
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 // ── DELETE DEVICE ──
@@ -1776,10 +1902,28 @@ async function deleteDevice(id) {
   try {
     await api('/api/devices?id=' + id, { method: 'DELETE' });
     closeModal('modal-delete-device');
+    showToast('Device removed', 'info');
     showPage('devices');
     loadDevices();
-  } catch (e) { alert(e.message); }
+  } catch (e) { showToast(e.message, 'error'); }
+}
+// ── TOAST ──
+function showToast(message, type = 'success') {
+  const icons = {
+    success: `<svg class="toast-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#16a34a" stroke-width="1.8"/><path stroke="#16a34a" stroke-width="2" stroke-linecap="round" d="M6 10l3 3 5-5"/></svg>`,
+    error:   `<svg class="toast-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#dc2626" stroke-width="1.8"/><path stroke="#dc2626" stroke-width="2" stroke-linecap="round" d="M7 7l6 6M13 7l-6 6"/></svg>`,
+    info:    `<svg class="toast-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#2563eb" stroke-width="1.8"/><path stroke="#2563eb" stroke-width="2" stroke-linecap="round" d="M10 9v5M10 7v.5"/></svg>`,
+  };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `${icons[type] || icons.info}<span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    el.addEventListener('animationend', () => el.remove());
+  }, 3800);
 }
 </script>
+<div id="toast-container"></div>
 </body>
 </html>
