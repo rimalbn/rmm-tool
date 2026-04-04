@@ -7,11 +7,11 @@ module.exports = async function handler(req, res) {
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
     if (req.method === 'POST') {
-      const { ticketId, content } = req.body;
+      const { ticketId, content, type } = req.body;
       if (!ticketId || !content) return res.status(400).json({ error: 'ticketId and content required' });
 
       const comment = await prisma.ticketComment.create({
-        data: { ticketId, content, authorName: user.username }
+        data: { ticketId, content, authorName: user.username, type: type || 'note' }
       });
       return res.status(201).json(comment);
     }

@@ -332,67 +332,124 @@
     .back-link:hover { color: var(--accent); }
     .back-link svg { width: 14px; height: 14px; }
 
-    .ticket-title-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-    .ticket-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; flex: 1; line-height: 1.3; }
+    /* Hero banner */
+    .ticket-hero {
+      border-radius: 14px; padding: 24px 28px 22px; margin-bottom: 22px;
+      border: 1px solid var(--border); position: relative; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .ticket-hero::before {
+      content: ''; position: absolute; inset: 0; opacity: 0.06; pointer-events: none;
+      background: repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%);
+      background-size: 12px 12px;
+    }
+    .ticket-hero-low      { background: linear-gradient(135deg,#f0fdf4,#fff); border-left: 5px solid #16a34a; color: #15803d; }
+    .ticket-hero-medium   { background: linear-gradient(135deg,#eff6ff,#fff); border-left: 5px solid #2563eb; color: #1d4ed8; }
+    .ticket-hero-high     { background: linear-gradient(135deg,#fff7ed,#fff); border-left: 5px solid #f97316; color: #c2410c; }
+    .ticket-hero-critical { background: linear-gradient(135deg,#fef2f2,#fff); border-left: 5px solid #dc2626; color: #b91c1c; }
+    .ticket-hero-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .ticket-hero-id { font-size: 12px; font-weight: 700; opacity: 0.5; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .ticket-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: var(--text); margin-bottom: 14px; }
+    .ticket-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ticket-hero-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.07); }
+    .ticket-hero-meta-item { font-size: 13px; color: var(--text-2); }
+    .ticket-hero-meta-item strong { color: var(--text); font-weight: 600; }
 
-    /* Info grid — the key metadata panel */
+    /* Info grid */
     .ticket-info-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
       border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-      margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .tic-cell {
-      background: var(--card); padding: 18px 20px;
+      background: var(--card); padding: 16px 18px;
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .tic-cell:nth-child(4n) { border-right: none; }
     .tic-cell:nth-last-child(-n+4) { border-bottom: none; }
-    .tic-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .tic-cell-blue   { background: #f8fbff; }
+    .tic-cell-purple { background: #faf5ff; }
+    .tic-cell-green  { background: #f8fdf9; }
+    .tic-cell-amber  { background: #fffdf0; }
+    .tic-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .tic-lbl svg { width: 12px; height: 12px; opacity: 0.6; }
     .tic-val { font-size: 14px; font-weight: 600; color: var(--text); }
     .tic-val.dim { color: var(--text-2); font-weight: 400; }
     .tic-val.with-action { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
+    /* Description */
     .ticket-desc {
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
       padding: 20px 24px; font-size: 14px; line-height: 1.8; color: var(--text-2);
-      margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      border-left: 4px solid var(--border);
+      margin-bottom: 22px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      border-left: 4px solid var(--border-hi);
     }
+    .ticket-desc-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
 
     /* Action bar */
     .action-bar {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
+    .action-bar-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .action-bar-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .action-bar-fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .action-field-lbl {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-      color: var(--text-2); margin-bottom: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-2); margin-bottom: 7px;
     }
     .action-sel {
-      width: 100%; background: var(--card); border: 1px solid var(--border);
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
       border-radius: 8px; color: var(--text); padding: 10px 32px 10px 14px;
       font-size: 14px; font-family: inherit; cursor: pointer; outline: none;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
       transition: border-color 0.15s, box-shadow 0.15s; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath stroke='%2394a3b8' stroke-width='1.5' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 12px center;
     }
-    .action-sel:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .action-sel:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
 
-    /* Comments */
-    .activity-hd { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; background: var(--accent-lt); padding: 8px 14px; border-radius: 7px; border-left: 3px solid var(--accent); display: inline-block; }
-    .comments { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
-    .comment {
-      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-      padding: 15px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      border-left: 3px solid var(--border-hi);
+    /* Activity / Comments */
+    .activity-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .activity-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--border); background: #f8fafc;
     }
-    .comment-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .activity-hd-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .activity-hd-count { font-size: 12px; color: var(--text-3); }
+    .comments { display: flex; flex-direction: column; gap: 0; }
+    .comment {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .comment:last-child { border-bottom: none; }
+    .comment-note   { border-left: 4px solid #f59e0b; background: #fffdf5; }
+    .comment-reply  { border-left: 4px solid #2563eb; background: #f8fbff; }
+    .comment-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; gap: 10px; }
+    .comment-author-row { display: flex; align-items: center; gap: 8px; }
+    .comment-av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; text-transform: uppercase; }
+    .comment-av-note  { background: linear-gradient(135deg,#f59e0b,#d97706); }
+    .comment-av-reply { background: linear-gradient(135deg,#2563eb,#7c3aed); }
     .comment-author { font-size: 14px; font-weight: 700; color: var(--text); }
+    .comment-type-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
+    .comment-type-note  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .comment-type-reply { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
     .comment-time { font-size: 12px; color: var(--text-3); }
-    .comment-body { font-size: 14px; color: var(--text-2); line-height: 1.7; }
-    .new-comment-row { display: flex; gap: 10px; align-items: flex-end; }
-    .new-comment-row .field { flex: 1; margin: 0; }
+    .comment-body { font-size: 14px; color: var(--text-2); line-height: 1.7; padding-left: 34px; }
+
+    /* Compose area */
+    .compose-area { border-top: 1px solid var(--border); }
+    .compose-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .compose-tab {
+      flex: 1; padding: 12px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+      text-align: center; color: var(--text-2); transition: all 0.15s; background: #f8fafc;
+      border: none; font-family: inherit;
+    }
+    .compose-tab:first-child { border-right: 1px solid var(--border); }
+    .compose-tab.active-note  { background: #fffdf5; color: #92400e; border-bottom: 2px solid #f59e0b; }
+    .compose-tab.active-reply { background: #f8fbff; color: #1d4ed8; border-bottom: 2px solid #2563eb; }
+    .compose-body { padding: 16px 20px; }
+    .compose-hint { font-size: 12px; color: var(--text-3); margin-bottom: 10px; line-height: 1.5; }
+    .compose-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
 
     /* ── MODALS ── */
     .modal-overlay {
@@ -1180,91 +1237,144 @@ async function openTicket(id, origin) {
     const isMe = t.assignedTo === currentAdmin.username;
     const el = document.getElementById('ticket-detail-content');
     el.innerHTML = `
-      <div class="ticket-title-row">
-        <div class="ticket-title">${esc(t.title)}</div>
-        <span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span>
-        <span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span>
-      </div>
-
-      <div class="ticket-info-grid">
-        <div class="tic-cell">
-          <div class="tic-lbl">Reported By</div>
-          <div class="tic-val">${t.createdBy ? esc(t.createdBy) : '<span class="dim">—</span>'}</div>
-        </div>
-        <div class="tic-cell">
-          <div class="tic-lbl">Assigned To</div>
-          <div class="tic-val with-action">
-            <span>${t.assignedTo ? esc(t.assignedTo) : '<span style="color:var(--text-3)">Unassigned</span>'}</span>
-            ${isActive && !isMe ? `<button class="btn btn-assign-me" onclick="assignToMe('${t.id}')">Assign to me</button>` : ''}
+      <!-- HERO BANNER -->
+      <div class="ticket-hero ticket-hero-${t.priority}">
+        <div class="ticket-hero-id">#${t.id.slice(-8).toUpperCase()}</div>
+        <div class="ticket-hero-top">
+          <div class="ticket-title">${esc(t.title)}</div>
+          <div class="ticket-hero-badges">
+            <span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span>
+            <span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span>
           </div>
         </div>
-        <div class="tic-cell">
-          <div class="tic-lbl">Device</div>
-          <div class="tic-val">${t.device ? esc(t.device.name) : '<span class="dim">—</span>'}</div>
+        <div class="ticket-hero-meta">
+          <div class="ticket-hero-meta-item">Reported by <strong>${t.createdBy ? esc(t.createdBy) : '—'}</strong></div>
+          <div class="ticket-hero-meta-item">Assigned to <strong>${t.assignedTo ? esc(t.assignedTo) : 'Unassigned'}</strong>${isActive && !isMe ? ` <button class="btn btn-assign-me" style="margin-left:6px" onclick="assignToMe('${t.id}')">Assign to me</button>` : ''}</div>
+          <div class="ticket-hero-meta-item">Device <strong>${t.device ? esc(t.device.name) : '—'}</strong></div>
+          <div class="ticket-hero-meta-item">Opened <strong>${timeAgo(t.createdAt)}</strong></div>
+          <div class="ticket-hero-meta-item">Updated <strong>${timeAgo(t.updatedAt)}</strong></div>
         </div>
-        <div class="tic-cell">
-          <div class="tic-lbl">Priority</div>
+      </div>
+
+      <!-- INFO GRID -->
+      <div class="ticket-info-grid">
+        <div class="tic-cell tic-cell-blue">
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 5v4M6 3.5v.5"/></svg>Status</div>
+          <div class="tic-val"><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></div>
+        </div>
+        <div class="tic-cell tic-cell-amber">
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5 4.5 4z"/></svg>Priority</div>
           <div class="tic-val"><span class="badge badge-${t.priority}"><span class="badge-dot"></span>${t.priority}</span></div>
         </div>
+        <div class="tic-cell tic-cell-purple">
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="4" r="2.5"/><path d="M1 11c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>Reported By</div>
+          <div class="tic-val">${t.createdBy ? esc(t.createdBy) : '<span style="color:var(--text-3)">—</span>'}</div>
+        </div>
+        <div class="tic-cell tic-cell-green">
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M4 6l2 2 4-4"/></svg>Assigned To</div>
+          <div class="tic-val with-action">${t.assignedTo ? esc(t.assignedTo) : '<span style="color:var(--text-3)">Unassigned</span>'}</div>
+        </div>
         <div class="tic-cell">
-          <div class="tic-lbl">Created</div>
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><rect x="1" y="2" width="10" height="7" rx="1"/><path d="M3 10h6"/></svg>Device</div>
+          <div class="tic-val">${t.device ? esc(t.device.name) : '<span style="color:var(--text-3)">—</span>'}</div>
+        </div>
+        <div class="tic-cell">
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/><path stroke="currentColor" stroke-width="1.5" d="M6 3v3l2 1"/></svg>Created</div>
           <div class="tic-val dim">${timeAgo(t.createdAt)}</div>
         </div>
         <div class="tic-cell">
-          <div class="tic-lbl">Last Updated</div>
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l-7 7M6 2h4v4"/></svg>Updated</div>
           <div class="tic-val dim">${timeAgo(t.updatedAt)}</div>
         </div>
         <div class="tic-cell">
-          <div class="tic-lbl">Status</div>
-          <div class="tic-val"><span class="badge badge-${t.status}"><span class="badge-dot"></span>${t.status.replace('_',' ')}</span></div>
-        </div>
-        <div class="tic-cell">
-          <div class="tic-lbl">Comments</div>
-          <div class="tic-val dim">${t.comments.length}</div>
+          <div class="tic-lbl"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M1 1h10v8H7L4 11V9H1V1z"/></svg>Comments</div>
+          <div class="tic-val">${t.comments.length}</div>
         </div>
       </div>
 
-      <div class="ticket-desc">${esc(t.description)}</div>
+      <!-- DESCRIPTION -->
+      <div class="ticket-desc">
+        <div class="ticket-desc-lbl">Description</div>
+        ${esc(t.description)}
+      </div>
 
+      <!-- ACTION BAR -->
       <div class="action-bar">
-        <div>
-          <div class="action-field-lbl">Change Status</div>
-          <select class="action-sel" onchange="updateTicketStatus('${t.id}', this.value)">
-            <option value="open"        ${t.status==='open'        ?'selected':''}>Open</option>
-            <option value="in_progress" ${t.status==='in_progress' ?'selected':''}>In Progress</option>
-            <option value="resolved"    ${t.status==='resolved'    ?'selected':''}>Resolved</option>
-            <option value="closed"      ${t.status==='closed'      ?'selected':''}>Closed</option>
-          </select>
+        <div class="action-bar-top">
+          <span class="action-bar-title">Update Ticket</span>
+          <button class="btn btn-primary" onclick="saveTicketChanges('${t.id}')">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg>
+            Save Changes
+          </button>
         </div>
-        <div>
-          <div class="action-field-lbl">Reassign To</div>
-          <select class="action-sel" onchange="updateTicketAssignee('${t.id}', this.value)">
-            <option value="">— Unassigned —</option>
-            ${users.map(u => `<option value="${u.username}" ${t.assignedTo===u.username?'selected':''}>${esc(u.username)}</option>`).join('')}
-          </select>
-        </div>
-        <div>
-          <div class="action-field-lbl">Priority</div>
-          <select class="action-sel" onchange="updateTicketPriority('${t.id}', this.value)">
-            ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}
-          </select>
+        <div class="action-bar-fields">
+          <div>
+            <div class="action-field-lbl">Status</div>
+            <select class="action-sel" id="td-status-${t.id}">
+              <option value="open"        ${t.status==='open'        ?'selected':''}>Open</option>
+              <option value="in_progress" ${t.status==='in_progress' ?'selected':''}>In Progress</option>
+              <option value="resolved"    ${t.status==='resolved'    ?'selected':''}>Resolved</option>
+              <option value="closed"      ${t.status==='closed'      ?'selected':''}>Closed</option>
+            </select>
+          </div>
+          <div>
+            <div class="action-field-lbl">Assigned To</div>
+            <select class="action-sel" id="td-assignee-${t.id}">
+              <option value="">— Unassigned —</option>
+              ${users.map(u => `<option value="${u.username}" ${t.assignedTo===u.username?'selected':''}>${esc(u.username)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <div class="action-field-lbl">Priority</div>
+            <select class="action-sel" id="td-priority-${t.id}">
+              ${['low','medium','high','critical'].map(p=>`<option value="${p}"${t.priority===p?' selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="activity-hd">Activity · ${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</div>
-      <div class="comments">
-        ${t.comments.map(c => `
-          <div class="comment">
-            <div class="comment-top">
-              <span class="comment-author">${esc(c.authorName)}</span>
-              <span class="comment-time">${timeAgo(c.createdAt)}</span>
+      <!-- ACTIVITY -->
+      <div class="activity-section">
+        <div class="activity-hd">
+          <span class="activity-hd-title">Activity</span>
+          <span class="activity-hd-count">${t.comments.length} comment${t.comments.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="comments">
+          ${t.comments.length ? t.comments.map(c => {
+            const ctype = c.type || 'note';
+            const av = c.authorName ? c.authorName[0].toUpperCase() : '?';
+            return `<div class="comment comment-${ctype}">
+              <div class="comment-top">
+                <div class="comment-author-row">
+                  <div class="comment-av comment-av-${ctype}">${av}</div>
+                  <span class="comment-author">${esc(c.authorName)}</span>
+                  <span class="comment-type-badge comment-type-${ctype}">${ctype === 'note' ? 'Internal Note' : 'Customer Reply'}</span>
+                </div>
+                <span class="comment-time">${timeAgo(c.createdAt)}</span>
+              </div>
+              <div class="comment-body">${esc(c.content)}</div>
+            </div>`;
+          }).join('') : `<div style="padding:24px 20px;color:var(--text-3);font-size:14px;text-align:center">No activity yet — add an internal note or reply below.</div>`}
+        </div>
+        <div class="compose-area">
+          <div class="compose-tabs">
+            <button class="compose-tab active-note" id="tab-note-${t.id}" onclick="switchTab('${t.id}','note')">
+              🔒 Internal Note
+            </button>
+            <button class="compose-tab" id="tab-reply-${t.id}" onclick="switchTab('${t.id}','reply')">
+              ✉️ Reply to Customer
+            </button>
+          </div>
+          <div class="compose-body">
+            <div class="compose-hint" id="compose-hint-${t.id}">Visible only to your team. Use for internal updates, findings, or handoff notes.</div>
+            <div class="field" style="margin:0">
+              <textarea id="new-comment-${t.id}" placeholder="Add an internal note…" style="min-height:90px"></textarea>
             </div>
-            <div class="comment-body">${esc(c.content)}</div>
-          </div>`).join('') || `<p style="color:var(--text-3);font-size:13px;padding:4px 0 12px">No comments yet.</p>`}
-      </div>
-      <div class="new-comment-row">
-        <div class="field"><textarea id="new-comment-${t.id}" placeholder="Leave a comment…"></textarea></div>
-        <button class="btn btn-primary" onclick="addComment('${t.id}')">Post</button>
+            <div class="compose-footer">
+              <button class="btn btn-primary" id="compose-btn-${t.id}" onclick="addComment('${t.id}')">Post Internal Note</button>
+            </div>
+          </div>
+        </div>
       </div>`;
   } catch (e) { console.error(e); }
 }
@@ -1276,10 +1386,12 @@ async function assignToMe(id) {
   } catch (e) { alert(e.message); }
 }
 
-async function updateTicketStatus(id, status) {
+async function saveTicketChanges(id) {
+  const status     = document.getElementById('td-status-' + id)?.value;
+  const assignedTo = document.getElementById('td-assignee-' + id)?.value;
+  const priority   = document.getElementById('td-priority-' + id)?.value;
   try {
-    await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ status }) });
-    // If resolved/closed, go to history; otherwise refresh detail
+    await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ status, assignedTo: assignedTo || null, priority }) });
     if (status === 'resolved' || status === 'closed') {
       loadHistory();
     } else {
@@ -1288,26 +1400,36 @@ async function updateTicketStatus(id, status) {
   } catch (e) { alert(e.message); }
 }
 
-async function updateTicketAssignee(id, assignedTo) {
-  try {
-    await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ assignedTo: assignedTo || null }) });
-    openTicket(id, _ticketOrigin);
-  } catch (e) { alert(e.message); }
-}
-
-async function updateTicketPriority(id, priority) {
-  try {
-    await api('/api/tickets?id=' + id, { method: 'PUT', body: JSON.stringify({ priority }) });
-    openTicket(id, _ticketOrigin);
-  } catch (e) { alert(e.message); }
+let _commentType = {};
+function switchTab(ticketId, type) {
+  _commentType[ticketId] = type;
+  const noteTab  = document.getElementById('tab-note-' + ticketId);
+  const replyTab = document.getElementById('tab-reply-' + ticketId);
+  const hint     = document.getElementById('compose-hint-' + ticketId);
+  const textarea = document.getElementById('new-comment-' + ticketId);
+  const btn      = document.getElementById('compose-btn-' + ticketId);
+  if (type === 'note') {
+    noteTab.className  = 'compose-tab active-note';
+    replyTab.className = 'compose-tab';
+    hint.textContent   = 'Visible only to your team. Use for internal updates, findings, or handoff notes.';
+    textarea.placeholder = 'Add an internal note…';
+    btn.textContent    = 'Post Internal Note';
+  } else {
+    noteTab.className  = 'compose-tab';
+    replyTab.className = 'compose-tab active-reply';
+    hint.textContent   = 'This will be shown as a customer-facing reply. Email sending can be configured later.';
+    textarea.placeholder = 'Write your reply to the customer…';
+    btn.textContent    = 'Send Reply';
+  }
 }
 
 async function addComment(ticketId) {
   const el = document.getElementById('new-comment-' + ticketId);
   const content = el.value.trim();
   if (!content) return;
+  const type = _commentType[ticketId] || 'note';
   try {
-    await api('/api/comments', { method: 'POST', body: JSON.stringify({ ticketId, content }) });
+    await api('/api/comments', { method: 'POST', body: JSON.stringify({ ticketId, content, type }) });
     el.value = '';
     openTicket(ticketId, _ticketOrigin);
   } catch (e) { alert(e.message); }

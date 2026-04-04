@@ -70,6 +70,7 @@ model TicketComment {
   id         String   @id @default(cuid())
   authorName String
   content    String
+  type       String   @default("note")
   createdAt  DateTime @default(now())
 
   ticket   Ticket @relation(fields: [ticketId], references: [id])
