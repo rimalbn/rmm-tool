@@ -72,11 +72,11 @@ function getDiskUsage() {
       const out = execSync("df -k /", { encoding: 'utf8' });
       const lines = out.trim().split('\n');
       const parts = lines[1].trim().split(/\s+/);
-      const usedKb = parseInt(parts[2]);
+      const totalKb = parseInt(parts[1]);
       const availKb = parseInt(parts[3]);
-      // Use used+available as total so the % matches what the OS reports
-      // (on macOS APFS, parts[1] is the full container size shared across volumes)
-      return { diskTotalGb: (usedKb + availKb) / 1e6, diskUsedGb: usedKb / 1e6 };
+      // Derive used as total-available so all APFS volumes are accounted for,
+      // not just the root volume (which misses /System/Volumes/Data etc.)
+      return { diskTotalGb: totalKb / 1e6, diskUsedGb: (totalKb - availKb) / 1e6 };
     }
   } catch {
     return { diskTotalGb: null, diskUsedGb: null };
