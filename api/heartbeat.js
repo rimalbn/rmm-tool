@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
     const device = await prisma.device.findUnique({ where: { agentToken } });
     if (!device) return res.status(401).json({ error: 'Unknown agent token' });
 
-    const { hostname, os, ipAddress, cpuPercent, ramUsedGb, ramTotalGb, diskUsedGb, diskTotalGb, uptimeSeconds } = req.body;
+    const { hostname, os, ipAddress, loggedInUser, cpuPercent, ramUsedGb, ramTotalGb, diskUsedGb, diskTotalGb, uptimeSeconds } = req.body;
 
     // Update device metadata + last seen
     await prisma.device.update({
@@ -21,6 +21,7 @@ module.exports = async function handler(req, res) {
         hostname: hostname || device.hostname,
         os: os || device.os,
         ipAddress: ipAddress || device.ipAddress,
+        loggedInUser: loggedInUser || device.loggedInUser,
         lastSeen: new Date(),
         online: true
       }

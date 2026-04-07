@@ -125,6 +125,7 @@ async function sendHeartbeat() {
       hostname: os.hostname(),
       os: `${os.type()} ${os.release()} (${os.arch()})`,
       ipAddress: getLocalIp(),
+      loggedInUser: (() => { try { return os.userInfo().username; } catch { return null; } })(),
       cpuPercent,
       ramUsedGb,
       ramTotalGb,

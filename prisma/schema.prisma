@@ -27,6 +27,7 @@ model Device {
   owner      String?
   location   String?
   notes      String?
+  loggedInUser String?
   lastSeen   DateTime @default(now())
   online     Boolean  @default(false)
   createdAt  DateTime @default(now())

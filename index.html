@@ -851,11 +851,12 @@
             </button>
           </div>
           <div class="card" style="border-top:3px solid #16a34a">
-            <div class="card-hd" style="background:#f0fdf4">
+            <div class="card-hd" style="background:#f0fdf4;gap:12px">
               <span class="card-title" style="color:#166534">Registered Devices</span>
+              <input id="device-search" type="text" placeholder="Search by name…" oninput="filterDevices()" style="height:32px;border:1px solid var(--border);border-radius:6px;padding:0 10px;font-size:13px;width:200px;outline:none" />
             </div>
             <table>
-              <thead><tr><th>Name</th><th>Hostname</th><th>OS</th><th>IP Address</th><th>Status</th><th>Last Seen</th><th>Open Tickets</th></tr></thead>
+              <thead><tr><th>Name</th><th>User</th><th>OS</th><th>IP Address</th><th>Status</th><th>Last Seen</th><th>Open Tickets</th></tr></thead>
               <tbody id="devices-tbody"></tbody>
             </table>
           </div>
@@ -1124,7 +1125,9 @@
         <div style="display:flex;gap:8px;align-items:center">
           <div class="token-box" id="ra-ssh" style="flex:1;color:var(--accent)"></div>
           <button class="btn btn-outline" data-copy="ra-ssh" onclick="copyText('ra-ssh')">Copy</button>
+          <a id="ra-ssh-link" class="btn btn-outline" href="#" style="text-decoration:none">Open</a>
         </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:5px">Opens your default SSH client. On Mac, this launches Terminal.</div>
       </div>
       <div>
         <div class="action-field-lbl" style="margin-bottom:8px">RDP (Windows Remote Desktop)</div>
@@ -1135,13 +1138,15 @@
         </div>
       </div>
       <div>
-        <div class="action-field-lbl" style="margin-bottom:8px">VNC Address</div>
+        <div class="action-field-lbl" style="margin-bottom:8px">VNC (Screen Sharing)</div>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="token-box" id="ra-vnc" style="flex:1;color:var(--amber)"></div>
           <button class="btn btn-outline" data-copy="ra-vnc" onclick="copyText('ra-vnc')">Copy</button>
+          <a id="ra-vnc-link" class="btn btn-outline" href="#" style="text-decoration:none">Open VNC</a>
         </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:5px">On Mac, opens Screen Sharing app. Requires VNC enabled on target device.</div>
       </div>
-      <div class="info-note" style="margin-bottom:0">The SSH username defaults to the device owner field. Edit the device to update it.</div>
+      <div class="info-note" style="margin-bottom:0">SSH username uses the <strong>Owner</strong> field. Set it via Edit Device if it's wrong.</div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-outline" onclick="closeModal('modal-remote-access')">Close</button>
@@ -1707,31 +1712,44 @@ async function addComment(ticketId) {
 }
 
 // ── DEVICES ──
+let _allDevices = [];
+let _deviceFilterStatus = null;
+
 async function loadDevices(filterStatus = null) {
   showPage('devices');
+  _deviceFilterStatus = filterStatus;
   try {
-    const devices = await api('/api/devices');
-    const fiveMin = 5 * 60 * 1000;
-    const now = Date.now();
-    let display = devices;
-    if (filterStatus === 'online')  display = devices.filter(d => new Date(d.lastSeen) > new Date(now - fiveMin));
-    if (filterStatus === 'offline') display = devices.filter(d => !(new Date(d.lastSeen) > new Date(now - fiveMin)));
+    _allDevices = await api('/api/devices');
     const cardTitle = document.querySelector('#page-devices .card-title');
     if (cardTitle) cardTitle.textContent = filterStatus === 'online' ? 'Online Devices' : filterStatus === 'offline' ? 'Offline Devices' : 'Registered Devices';
-    const tbody = document.getElementById('devices-tbody');
-    tbody.innerHTML = display.length ? display.map(d => {
-      const online = new Date(d.lastSeen) > new Date(now - fiveMin);
-      return `<tr onclick="openDevice('${d.id}')">
-        <td class="td-primary">${esc(d.name)}</td>
-        <td class="td-secondary">${esc(d.hostname)}</td>
-        <td class="td-secondary">${d.os ? esc(d.os) : '<span class="td-dim">—</span>'}</td>
-        <td class="td-secondary">${d.ipAddress ? esc(d.ipAddress) : '<span class="td-dim">—</span>'}</td>
-        <td><div class="status-cell"><span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span><span class="td-secondary">${online ? 'Online' : 'Offline'}</span></div></td>
-        <td class="td-dim">${timeAgo(d.lastSeen)}</td>
-        <td class="td-secondary">${d._count ? d._count.tickets : 0}</td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon" style="background:#f0fdf4"><svg viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="22" rx="2" stroke="#16a34a" stroke-width="2"/><path stroke="#16a34a" stroke-width="2" d="M16 30h8M20 30v4"/></svg></div><h3>${filterStatus ? 'No ' + filterStatus + ' devices' : 'No devices yet'}</h3><p>${filterStatus ? 'No devices are currently ' + filterStatus + '.' : 'Add your first device to start monitoring.'}</p>${!filterStatus ? '<button class="btn btn-primary" onclick="openAddDeviceModal()" style="margin-top:4px">+ Add Device</button>' : ''}</div></td></tr>`;
+    renderDevicesTable();
   } catch (e) { console.error(e); }
+}
+
+function filterDevices() { renderDevicesTable(); }
+
+function renderDevicesTable() {
+  const fiveMin = 5 * 60 * 1000;
+  const now = Date.now();
+  const q = (document.getElementById('device-search')?.value || '').toLowerCase();
+  let display = _allDevices;
+  if (_deviceFilterStatus === 'online')  display = display.filter(d => new Date(d.lastSeen) > new Date(now - fiveMin));
+  if (_deviceFilterStatus === 'offline') display = display.filter(d => !(new Date(d.lastSeen) > new Date(now - fiveMin)));
+  if (q) display = display.filter(d => d.name.toLowerCase().includes(q));
+  const tbody = document.getElementById('devices-tbody');
+  tbody.innerHTML = display.length ? display.map(d => {
+    const online = new Date(d.lastSeen) > new Date(now - fiveMin);
+    const userDisplay = d.owner ? esc(d.owner) : (d.loggedInUser ? `<span style="color:var(--text-3);font-style:italic">${esc(d.loggedInUser)}</span>` : '<span class="td-dim">—</span>');
+    return `<tr onclick="openDevice('${d.id}')">
+      <td class="td-primary">${esc(d.name)}</td>
+      <td class="td-secondary">${userDisplay}</td>
+      <td class="td-secondary">${d.os ? esc(d.os) : '<span class="td-dim">—</span>'}</td>
+      <td class="td-secondary">${d.ipAddress ? esc(d.ipAddress) : '<span class="td-dim">—</span>'}</td>
+      <td><div class="status-cell"><span class="sdot ${online ? 'sdot-on' : 'sdot-off'}"></span><span class="td-secondary">${online ? 'Online' : 'Offline'}</span></div></td>
+      <td class="td-dim">${timeAgo(d.lastSeen)}</td>
+      <td class="td-secondary">${d._count ? d._count.tickets : 0}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon" style="background:#f0fdf4"><svg viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="22" rx="2" stroke="#16a34a" stroke-width="2"/><path stroke="#16a34a" stroke-width="2" d="M16 30h8M20 30v4"/></svg></div><h3>${q ? 'No devices match "'+esc(q)+'"' : _deviceFilterStatus ? 'No ' + _deviceFilterStatus + ' devices' : 'No devices yet'}</h3><p>${q ? 'Try a different search term.' : _deviceFilterStatus ? 'No devices are currently ' + _deviceFilterStatus + '.' : 'Add your first device to start monitoring.'}</p>${!_deviceFilterStatus && !q ? '<button class="btn btn-primary" onclick="openAddDeviceModal()" style="margin-top:4px">+ Add Device</button>' : ''}</div></td></tr>`;
 }
 
 async function openDevice(id) {
@@ -1758,11 +1776,24 @@ async function openDevice(id) {
               <span class="td-secondary">${online ? 'Online' : 'Offline'}</span>
             </div>
           </div>
-          <div style="font-size:13px;color:var(--text-3)">${esc(d.hostname)} · ${d.os||'Unknown OS'} · ${d.ipAddress||'Unknown IP'}${d.owner ? ' · Owner: <strong style="color:var(--text-2)">'+esc(d.owner)+'</strong>' : ''}${d.location ? ' · 📍 '+esc(d.location) : ''} · Last seen ${timeAgo(d.lastSeen)}</div>
-          ${d.notes ? `<div style="margin-top:8px;font-size:13px;color:var(--text-2);background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--border-hi);border-radius:6px;padding:8px 12px">${esc(d.notes)}</div>` : ''}
+          <div style="font-size:13px;color:var(--text-3)">${esc(d.hostname)} · ${d.os||'Unknown OS'} · ${d.ipAddress||'Unknown IP'} · Last seen ${timeAgo(d.lastSeen)}</div>
+          <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:13px">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="var(--text-3)" stroke-width="1.5"><circle cx="7" cy="4" r="2.5"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5"/></svg>
+              <span style="color:var(--text-3)">Owner:</span>
+              <strong style="color:var(--text-2)">${d.owner ? esc(d.owner) : '<span style="color:var(--text-3);font-weight:400">Not set</span>'}</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;background:${d.loggedInUser ? '#f0fdf4' : '#f8fafc'};border:1px solid ${d.loggedInUser ? '#bbf7d0' : 'var(--border)'};border-radius:6px;padding:5px 12px;font-size:13px">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="${d.loggedInUser ? '#16a34a' : 'var(--text-3)'}" stroke-width="1.5"><rect x="1" y="3" width="12" height="8" rx="1"/><path d="M4 7h2M4 9h4"/></svg>
+              <span style="color:var(--text-3)">Logged in as:</span>
+              <strong style="color:${d.loggedInUser ? '#166534' : 'var(--text-3)'};font-weight:${d.loggedInUser ? '600' : '400'}">${d.loggedInUser ? esc(d.loggedInUser) : 'Unknown'}</strong>
+            </div>
+            ${d.location ? `<div style="display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:13px"><span style="color:var(--text-3)">📍</span><span style="color:var(--text-2)">${esc(d.location)}</span></div>` : ''}
+          </div>
+          ${d.notes ? `<div style="margin-top:10px;font-size:13px;color:var(--text-2);background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--border-hi);border-radius:6px;padding:8px 12px">${esc(d.notes)}</div>` : ''}
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0;margin-top:4px">
-          <button class="btn btn-outline" onclick="openRemoteAccess(${JSON.stringify({hostname:d.hostname,ip:d.ipAddress,owner:d.owner,name:d.name})})">
+          <button class="btn btn-outline" onclick="openRemoteAccess(${JSON.stringify({hostname:d.hostname,ip:d.ipAddress,owner:d.owner,loggedInUser:d.loggedInUser,name:d.name})})">
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="12" height="8" rx="1"/><path d="M4 13h6M7 10v3M4 5l2 2-2 2"/></svg>
             Remote Access
           </button>
@@ -1892,7 +1923,7 @@ async function addDevice() {
   try {
     const d = await api('/api/devices', { method: 'POST', body: JSON.stringify({ name }) });
     document.getElementById('ad-token').textContent = d.agentToken;
-    document.getElementById('ad-install').textContent = `AGENT_TOKEN=${d.agentToken} RMM_URL=https://your-app.vercel.app node agent.js`;
+    document.getElementById('ad-install').textContent = `AGENT_TOKEN=${d.agentToken} RMM_URL=${location.origin} node agent.js`;
     document.getElementById('ad-result').style.display = 'block';
     document.getElementById('ad-btn').style.display = 'none';
     showToast('Device added — copy the token below', 'success');
@@ -2045,14 +2076,18 @@ initAuth();
 
 // ── REMOTE ACCESS ──
 function openRemoteAccess(info) {
-  const ssh  = `ssh ${info.owner || 'user'}@${info.ip || info.hostname}`;
-  const rdp  = `mstsc /v:${info.ip || info.hostname}`;
-  const vnc  = `${info.ip || info.hostname}:5900`;
+  const host = info.ip || info.hostname;
+  const user = info.owner || info.loggedInUser || 'user';
+  const ssh  = `ssh ${user}@${host}`;
+  const rdp  = `mstsc /v:${host}`;
+  const vnc  = `${host}:5900`;
   document.getElementById('ra-device-name').textContent = info.name;
   document.getElementById('ra-ssh').textContent  = ssh;
   document.getElementById('ra-rdp').textContent  = rdp;
   document.getElementById('ra-vnc').textContent  = vnc;
-  document.getElementById('ra-rdp-link').href = `rdp://full%20address=s:${info.ip || info.hostname}`;
+  document.getElementById('ra-ssh-link').href  = `ssh://${user}@${host}`;
+  document.getElementById('ra-rdp-link').href  = `rdp://full%20address=s:${host}`;
+  document.getElementById('ra-vnc-link').href  = `vnc://${host}:5900`;
   document.getElementById('modal-remote-access').classList.add('open');
 }
 function copyText(id) {
