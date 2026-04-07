@@ -81,13 +81,41 @@ function getDiskUsage() {
   }
 }
 
+function getAccurateRam() {
+  const totalMem = os.totalmem();
+  const platform = process.platform;
+
+  try {
+    if (platform === 'darwin') {
+      const out = execSync('vm_stat', { encoding: 'utf8' });
+      const pageMatch = out.match(/page size of (\d+) bytes/);
+      const pageSize = pageMatch ? parseInt(pageMatch[1]) : 16384;
+      const parse = key => {
+        const m = out.match(new RegExp(key + '[^:]*:\\s+(\\d+)'));
+        return m ? parseInt(m[1]) : 0;
+      };
+      const freePages     = parse('Pages free');
+      const inactivePages = parse('Pages inactive');
+      const specPages     = parse('Pages speculative');
+      const availableBytes = (freePages + inactivePages + specPages) * pageSize;
+      return { ramTotalGb: totalMem / 1e9, ramUsedGb: (totalMem - availableBytes) / 1e9 };
+    }
+    if (platform === 'linux') {
+      const out = execSync('cat /proc/meminfo', { encoding: 'utf8' });
+      const avail = out.match(/MemAvailable:\s+(\d+)/);
+      const availableBytes = avail ? parseInt(avail[1]) * 1024 : os.freemem();
+      return { ramTotalGb: totalMem / 1e9, ramUsedGb: (totalMem - availableBytes) / 1e9 };
+    }
+  } catch {}
+
+  // fallback (Windows or parse failure)
+  return { ramTotalGb: totalMem / 1e9, ramUsedGb: (totalMem - os.freemem()) / 1e9 };
+}
+
 async function sendHeartbeat() {
   try {
     const cpuPercent = await getCpuPercent();
-    const totalMem = os.totalmem();
-    const freeMem = os.freemem();
-    const ramTotalGb = totalMem / 1e9;
-    const ramUsedGb = (totalMem - freeMem) / 1e9;
+    const { ramTotalGb, ramUsedGb } = getAccurateRam();
     const { diskTotalGb, diskUsedGb } = getDiskUsage();
     const uptimeSeconds = Math.floor(os.uptime());
 
