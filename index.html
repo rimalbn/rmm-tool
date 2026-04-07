@@ -2093,7 +2093,6 @@ function openRemoteAccess() {
   document.getElementById('ra-ssh').textContent  = ssh;
   document.getElementById('ra-rdp').textContent  = rdp;
   document.getElementById('ra-vnc').textContent  = vnc;
-  document.getElementById('ra-rdp-link').href  = `rdp://full%20address=s:${host}`;
   document.getElementById('ra-vnc-link').href  = `vnc://${host}:5900`;
   document.getElementById('modal-remote-access').classList.add('open');
 }
