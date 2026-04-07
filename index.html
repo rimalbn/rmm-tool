@@ -1125,28 +1125,28 @@
         <div style="display:flex;gap:8px;align-items:center">
           <div class="token-box" id="ra-ssh" style="flex:1;color:var(--accent)"></div>
           <button class="btn btn-outline" data-copy="ra-ssh" onclick="copyText('ra-ssh')">Copy</button>
-          <a id="ra-ssh-link" class="btn btn-outline" href="#" style="text-decoration:none">Open</a>
         </div>
-        <div style="font-size:12px;color:var(--text-3);margin-top:5px">Opens your default SSH client. On Mac, this launches Terminal.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:5px">Copy and paste into your terminal. On Mac: open Terminal and paste. On Windows: use PuTTY or Windows Terminal.</div>
       </div>
       <div>
-        <div class="action-field-lbl" style="margin-bottom:8px">RDP (Windows Remote Desktop)</div>
+        <div class="action-field-lbl" style="margin-bottom:8px">RDP — Windows Remote Desktop</div>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="token-box" id="ra-rdp" style="flex:1;color:var(--purple)"></div>
           <button class="btn btn-outline" data-copy="ra-rdp" onclick="copyText('ra-rdp')">Copy</button>
-          <a id="ra-rdp-link" class="btn btn-outline" href="#" style="text-decoration:none">Open RDP</a>
+          <button class="btn btn-outline" onclick="downloadRdpFile()">Download .rdp</button>
         </div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:5px">Download the .rdp file and open it with Microsoft Remote Desktop. Target must have RDP enabled.</div>
       </div>
       <div>
-        <div class="action-field-lbl" style="margin-bottom:8px">VNC (Screen Sharing)</div>
+        <div class="action-field-lbl" style="margin-bottom:8px">VNC — Screen Sharing</div>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="token-box" id="ra-vnc" style="flex:1;color:var(--amber)"></div>
           <button class="btn btn-outline" data-copy="ra-vnc" onclick="copyText('ra-vnc')">Copy</button>
           <a id="ra-vnc-link" class="btn btn-outline" href="#" style="text-decoration:none">Open VNC</a>
         </div>
-        <div style="font-size:12px;color:var(--text-3);margin-top:5px">On Mac, opens Screen Sharing app. Requires VNC enabled on target device.</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:5px">On Mac, click <strong>Open VNC</strong> to launch Screen Sharing directly. Target must have VNC/Screen Sharing enabled.</div>
       </div>
-      <div class="info-note" style="margin-bottom:0">SSH username uses the <strong>Owner</strong> field. Set it via Edit Device if it's wrong.</div>
+      <div class="info-note" style="margin-bottom:0">SSH username uses the <strong>Owner</strong> field. Edit the device to update it.</div>
     </div>
     <div class="modal-ft">
       <button class="btn btn-outline" onclick="closeModal('modal-remote-access')">Close</button>
@@ -1713,6 +1713,8 @@ async function addComment(ticketId) {
 
 // ── DEVICES ──
 let _allDevices = [];
+let _currentDevice = null;
+let _allUsers = [];
 let _deviceFilterStatus = null;
 
 async function loadDevices(filterStatus = null) {
@@ -1757,6 +1759,7 @@ async function openDevice(id) {
   document.querySelector('[data-page="devices"]').classList.add('active');
   try {
     const d = await api('/api/devices?id=' + id);
+    _currentDevice = d;
     const fiveMin = 5 * 60 * 1000;
     const online  = new Date(d.lastSeen) > new Date(Date.now() - fiveMin);
     const snap    = d.snapshots && d.snapshots[0];
@@ -1793,11 +1796,11 @@ async function openDevice(id) {
           ${d.notes ? `<div style="margin-top:10px;font-size:13px;color:var(--text-2);background:#f8fafc;border:1px solid var(--border);border-left:3px solid var(--border-hi);border-radius:6px;padding:8px 12px">${esc(d.notes)}</div>` : ''}
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0;margin-top:4px">
-          <button class="btn btn-outline" onclick="openRemoteAccess(${JSON.stringify({hostname:d.hostname,ip:d.ipAddress,owner:d.owner,loggedInUser:d.loggedInUser,name:d.name})})">
+          <button class="btn btn-outline" onclick="openRemoteAccess()">
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="12" height="8" rx="1"/><path d="M4 13h6M7 10v3M4 5l2 2-2 2"/></svg>
             Remote Access
           </button>
-          <button class="btn btn-outline" onclick="openEditDevice(${JSON.stringify({id:d.id,name:d.name,owner:d.owner||'',location:d.location||'',notes:d.notes||''})})">
+          <button class="btn btn-outline" onclick="openEditDevice()">
             <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.5 1.5l3 3L5 12H2v-3L9.5 1.5z"/></svg>
             Edit
           </button>
@@ -1986,6 +1989,7 @@ async function loadUsers() {
   showPage('users');
   try {
     const users = await api('/api/users');
+    _allUsers = users;
     const superCount = users.filter(u => u.role === 'superadmin').length;
     const adminCount = users.filter(u => u.role === 'admin').length;
     document.getElementById('stat-users-total').textContent = users.length;
@@ -2005,7 +2009,7 @@ async function loadUsers() {
         <td>
           ${isSuperadmin ? `
             <div style="display:flex;gap:6px">
-              <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditUser(${JSON.stringify({id:u.id,username:u.username,email:u.email,role:u.role})})">Edit</button>
+              <button class="btn btn-outline" style="font-size:12px;padding:5px 12px" onclick="openEditUser('${u.id}')">Edit</button>
               ${!isMe ? `<button class="btn" style="font-size:12px;padding:5px 12px;background:var(--red-lt);color:var(--red);border:1px solid #fecaca" onclick="confirmDeleteUser('${u.id}','${esc(u.username)}')">Delete</button>` : ''}
             </div>` : '<span class="td-dim">—</span>'}
         </td>
@@ -2036,11 +2040,13 @@ async function createUser() {
 }
 
 let _editUserId = null;
-function openEditUser(info) {
-  _editUserId = info.id;
-  document.getElementById('eu-username-title').textContent = info.username;
-  document.getElementById('eu-email').value    = info.email;
-  document.getElementById('eu-role').value     = info.role;
+function openEditUser(id) {
+  const u = _allUsers.find(x => x.id === id);
+  if (!u) return;
+  _editUserId = u.id;
+  document.getElementById('eu-username-title').textContent = u.username;
+  document.getElementById('eu-email').value    = u.email;
+  document.getElementById('eu-role').value     = u.role;
   document.getElementById('eu-password').value = '';
   document.getElementById('modal-edit-user').classList.add('open');
 }
@@ -2075,13 +2081,15 @@ async function deleteUser(id) {
 initAuth();
 
 // ── REMOTE ACCESS ──
-function openRemoteAccess(info) {
-  const host = info.ip || info.hostname;
-  const user = info.owner || info.loggedInUser || 'user';
+function openRemoteAccess() {
+  const d    = _currentDevice;
+  if (!d) return;
+  const host = d.ipAddress || d.hostname;
+  const user = d.owner || d.loggedInUser || 'user';
   const ssh  = `ssh ${user}@${host}`;
   const rdp  = `mstsc /v:${host}`;
   const vnc  = `${host}:5900`;
-  document.getElementById('ra-device-name').textContent = info.name;
+  document.getElementById('ra-device-name').textContent = d.name;
   document.getElementById('ra-ssh').textContent  = ssh;
   document.getElementById('ra-rdp').textContent  = rdp;
   document.getElementById('ra-vnc').textContent  = vnc;
@@ -2089,6 +2097,14 @@ function openRemoteAccess(info) {
   document.getElementById('ra-rdp-link').href  = `rdp://full%20address=s:${host}`;
   document.getElementById('ra-vnc-link').href  = `vnc://${host}:5900`;
   document.getElementById('modal-remote-access').classList.add('open');
+}
+function downloadRdpFile() {
+  const host = document.getElementById('ra-rdp').textContent.replace('mstsc /v:', '');
+  const content = `full address:s:${host}\nprompt for credentials:i:1\n`;
+  const a = document.createElement('a');
+  a.href = 'data:application/rdp;charset=utf-8,' + encodeURIComponent(content);
+  a.download = (document.getElementById('ra-device-name').textContent || 'device') + '.rdp';
+  a.click();
 }
 function copyText(id) {
   const txt = document.getElementById(id).textContent;
@@ -2100,12 +2116,14 @@ function copyText(id) {
 
 // ── EDIT DEVICE ──
 let _editDeviceId = null;
-function openEditDevice(info) {
-  _editDeviceId = info.id;
-  document.getElementById('ed-name').value     = info.name;
-  document.getElementById('ed-owner').value    = info.owner;
-  document.getElementById('ed-location').value = info.location;
-  document.getElementById('ed-notes').value    = info.notes;
+function openEditDevice() {
+  const d = _currentDevice;
+  if (!d) return;
+  _editDeviceId = d.id;
+  document.getElementById('ed-name').value     = d.name     || '';
+  document.getElementById('ed-owner').value    = d.owner    || '';
+  document.getElementById('ed-location').value = d.location || '';
+  document.getElementById('ed-notes').value    = d.notes    || '';
   document.getElementById('modal-edit-device').classList.add('open');
 }
 async function saveEditDevice() {
@@ -2120,8 +2138,8 @@ async function saveEditDevice() {
       body: JSON.stringify({ name, owner, location, notes })
     });
     closeModal('modal-edit-device');
-    showToast('Device info updated', 'success');
-    openDevice(_editDeviceId);
+    showToast('Device updated', 'success');
+    await openDevice(_editDeviceId);
   } catch (e) { showToast(e.message, 'error'); }
 }
 
