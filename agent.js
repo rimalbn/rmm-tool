@@ -1,5 +1,5 @@
 /**
- * RMM Agent — runs on each monitored device.
+ * NetWatch Agent — runs on each monitored device.
  *
  * Usage:
  *   AGENT_TOKEN=<token> RMM_URL=https://your-app.vercel.app node agent.js
@@ -168,6 +168,6 @@ if (typeof fetch === 'undefined') {
   process.exit(1);
 }
 
-console.log(`RMM Agent starting — reporting to ${RMM_URL} every ${INTERVAL_MS / 1000}s`);
+console.log(`NetWatch Agent starting — reporting to ${RMM_URL} every ${INTERVAL_MS / 1000}s`);
 sendHeartbeat();
 setInterval(sendHeartbeat, INTERVAL_MS);
