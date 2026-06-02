@@ -78,3 +78,86 @@ model TicketComment {
   ticket   Ticket @relation(fields: [ticketId], references: [id])
   ticketId String
 }
+
+model AuditFinding {
+  id                 String    @id @default(cuid())
+  findingId          String    @unique
+  title              String
+  auditor            String
+  date               String?
+  riskRating         String
+  condition          String?   @db.Text
+  criteria           String?   @db.Text
+  cause              String?   @db.Text
+  consequence        String?   @db.Text
+  correctiveAction   String?   @db.Text
+  managementResponse String?   @db.Text
+  status             String    @default("Draft")
+  remediationDue     String?
+  createdBy          String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  history  AuditFindingHistory[]
+  comments AuditFindingComment[]
+}
+
+model AuditFindingHistory {
+  id        String   @id @default(cuid())
+  field     String
+  fromVal   String?  @db.Text
+  toVal     String?  @db.Text
+  user      String
+  createdAt DateTime @default(now())
+
+  finding   AuditFinding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  findingId String
+}
+
+model AuditFindingComment {
+  id        String   @id @default(cuid())
+  author    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  finding   AuditFinding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  findingId String
+}
+
+model AuditDoc {
+  id             String   @id @default(cuid())
+  title          String
+  category       String   @default("Other")
+  body           String   @db.Text
+  tags           String[]
+  pinned         Boolean  @default(false)
+  starredBy      String[]
+  viewCount      Int      @default(0)
+  createdBy      String
+  lastEditedBy   String
+  fileAttachment String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  history AuditDocHistory[]
+}
+
+model AuditDocHistory {
+  id        String   @id @default(cuid())
+  user      String
+  action    String
+  createdAt DateTime @default(now())
+
+  doc   AuditDoc @relation(fields: [docId], references: [id], onDelete: Cascade)
+  docId String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  user      String
+  action    String
+  itemTitle String
+  itemType  String
+  itemId    String
+  createdAt DateTime @default(now())
+}
